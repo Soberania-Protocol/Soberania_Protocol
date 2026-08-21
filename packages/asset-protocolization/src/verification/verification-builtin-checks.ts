@@ -300,7 +300,20 @@ export const minimumMaterialCountCheck: AssetVerificationCheck = Object.freeze({
 // check.identity.strategy
 // ---------------------------------------------------------------------------
 
-function registryEntryConforms(
+/**
+ * Whether one registry entry reference conforms to a profile's registry
+ * constraint.
+ *
+ * Exported for reuse *inside* this package only — it is not part of the package
+ * facade. APV-09 asks the same mechanical question of the same Protocol
+ * vocabulary when it assesses an identity or evidence requirement, and a second
+ * copy of this comparison would be free to drift from this one.
+ *
+ * Structural only: `RegistryType`, `RegistryAuthorityLevel`, `RegistryEntryType`
+ * and an opaque namespace allow-list. No registry is named, no jurisdiction is
+ * known, and nothing here resolves the entry or establishes that it exists.
+ */
+export function registryEntryConforms(
   entryRef: CanonicalRegistryEntryRef,
   constraint: AssetRegistryConstraint,
 ): boolean {

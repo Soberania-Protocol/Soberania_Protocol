@@ -67,12 +67,33 @@
  * present is never a credential valid; and a credential valid is never authority
  * over this subject.
  *
+ * APV-09 delivers the seventh: the **protocolization state machine and readiness
+ * evaluation** — the first slice permitted to interpret everything above and say
+ * whether a case may proceed. It derives, from the exact pinned profile version
+ * at the exact current case revision, one explainable
+ * `ProtocolizationReadinessEvaluation`: an assessment per requirement, a
+ * machine-readable blocker and warning set, and a top-level readiness state. It
+ * introduces the semantic *requirement satisfied*, which no earlier slice was
+ * allowed to state, and it introduces it here rather than in Protocol.
+ *
+ * Readiness is orthogonal to APV-04's lifecycle and is never persisted: nothing
+ * is stored, no case is mutated, no event is emitted and no state is commanded.
+ * `MaterialPresent` is never `Satisfied`; a declaration satisfied as a workflow
+ * requirement is never a proposition true; a `Pass` is never universal truth; a
+ * `Warning` is never a `Pass`; an `Unavailable` is never a `Fail`; a stale
+ * `Pass` never satisfies a newer revision; an `Attest` decision is never
+ * attestation material; a proof reference present is never a proof verified; a
+ * professional `Reject` is never legal invalidity; and `READY` is never
+ * protocolized, tokenizable, legally transferable or an Enterprise
+ * authorization.
+ *
  * See `docs/asset-protocolization/APV_03_ASSET_PROFILE_FRAMEWORK.md`,
  * `docs/asset-protocolization/APV_04_PROTOCOLIZATION_CASE.md`,
  * `docs/asset-protocolization/APV_05_EVIDENCE_INTAKE.md`,
  * `docs/asset-protocolization/APV_06_DECLARATION_CLAIM_PREPARATION.md`,
- * `docs/asset-protocolization/APV_07_VERIFICATION_PIPELINE.md` and
- * `docs/asset-protocolization/APV_08_PROFESSIONAL_ATTESTATION_WORKFLOW.md`.
+ * `docs/asset-protocolization/APV_07_VERIFICATION_PIPELINE.md`,
+ * `docs/asset-protocolization/APV_08_PROFESSIONAL_ATTESTATION_WORKFLOW.md` and
+ * `docs/asset-protocolization/APV_09_PROTOCOLIZATION_STATE_MACHINE.md`.
  */
 export { ASSET_IDENTIFIER_MAX_LENGTH, assetProfileVersionKey, compareAssetProfileVersions, isValidAssetCategoryId, isValidAssetProfileId, isValidAssetProfileVersion, isValidAssetRequirementConditionId, isValidAssetRequirementId, isValidAssetVerificationCheckId, } from './identifiers';
 export type { AssetCategoryId, AssetProfileId, AssetProfileVersion, AssetRequirementConditionId, AssetRequirementId, AssetVerificationCheckId, } from './identifiers';
@@ -198,4 +219,15 @@ export { createInMemoryProfessionalReviewDecisionRepository, createInMemoryProfe
 export type { ProfessionalReviewDecisionRepository, ProfessionalReviewRequestRepository, } from './attestation/review-repository';
 export { PROFESSIONAL_REVIEW_ERROR_CODES, ProfessionalReviewError, } from './attestation/review-errors';
 export type { ProfessionalReviewErrorCode, ProfessionalReviewErrorDetails, } from './attestation/review-errors';
+export { PROTOCOLIZATION_READINESS_BLOCKER_CODES, PROTOCOLIZATION_READINESS_BLOCKER_CODE_LIST, PROTOCOLIZATION_READINESS_WARNING_CODES, PROTOCOLIZATION_READINESS_WARNING_CODE_LIST, isProtocolizationReadinessBlockerCode, isProtocolizationReadinessWarningCode, } from './state-machine/readiness-reason';
+export type { ProtocolizationReadinessBlockerCode, ProtocolizationReadinessReason, ProtocolizationReadinessReasonCode, ProtocolizationReadinessWarningCode, } from './state-machine/readiness-reason';
+export { PROTOCOLIZATION_READINESS_STATE_PRECEDENCE, ProtocolizationReadinessState, ProtocolizationRequirementApplicability, ProtocolizationRequirementStatus, deriveProtocolizationReadinessState, isProtocolizationReadinessState, isProtocolizationRequirementApplicability, isProtocolizationRequirementStatus, } from './state-machine/readiness-state';
+export type { ProtocolizationRequirementAssessment } from './state-machine/requirement-assessment';
+export { PROTOCOLIZATION_READINESS_EVALUATION_SCHEMA_VERSION } from './state-machine/readiness-evaluation';
+export type { ProtocolizationReadinessEvaluation, ProtocolizationReadinessInputs, } from './state-machine/readiness-evaluation';
+export { evaluateProtocolizationReadiness } from './state-machine/readiness-operations';
+export { getProtocolizationRequirementAssessment, isProtocolizationReadinessCurrentForCase, listProtocolizationReadinessBlockers, listProtocolizationReadinessWarnings, } from './state-machine/readiness-projections';
+export type { ProtocolizationReadinessReasonFilter } from './state-machine/readiness-projections';
+export { PROTOCOLIZATION_READINESS_ERROR_CODES, ProtocolizationReadinessError, } from './state-machine/readiness-errors';
+export type { ProtocolizationReadinessErrorCode, ProtocolizationReadinessErrorDetails, } from './state-machine/readiness-errors';
 //# sourceMappingURL=index.d.ts.map

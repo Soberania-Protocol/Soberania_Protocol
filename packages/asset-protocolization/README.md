@@ -303,13 +303,122 @@ conclude the attestation covered the material it created. A follow-up review is 
 reviewers who disagree both stay on the record with no winner picked.
 
 
+### APV-09 — the protocolization state machine and readiness evaluation
+
+`src/state-machine/`. The first slice permitted to **interpret** everything above
+and answer one question: *may protocolization be attempted for this case, right
+now?*
+
+`evaluateProtocolizationReadiness` takes a case, its exact pinned profile version
+and a bounded bundle of the records the earlier slices produced, and returns one
+`ProtocolizationReadinessEvaluation`: a
+`ProtocolizationRequirementAssessment` for **every** requirement of the profile,
+a closed machine-readable set of blockers and warnings, a derived
+`ProtocolizationReadinessState`, and the exact case revision the answer describes.
+
+Readiness is a **derived projection**, orthogonal to APV-04's lifecycle and never
+persisted. APV-04's three lifecycle states are untouched — no `Ready`, `Rejected`
+or `MoreEvidenceRequired` member was added to them, and `MaterialPresent` still
+means exactly what it meant. There is no readiness repository, no stored state
+field, no evaluation id and no readiness event: a stored copy of a conclusion
+that can be recomputed exactly would be free to drift from the facts justifying
+it. There is likewise no way to *command* readiness — no manual promotion, no
+administrative override, and no way to waive, skip or discount a requirement, a
+failing check or an unavailable one.
+
+```text
+lifecycle Active  +  readiness EvidencePending   both true, and both meaningful
+lifecycle Active  +  readiness Ready             likewise
+lifecycle Cancelled                              Ineligible, always
+```
+
+The semantic *requirement satisfied* first exists here, it is owned by this
+vertical, and nothing comparable was added to Protocol. It is derived from the
+requirement definition, its applicability, the case's material at the evaluated
+revision and the supplied records — and from nothing else.
+
+Every APV-07 outcome keeps its own meaning on the way through: a `Warning`
+satisfies non-fatally and stays a `Warning`, a `ManualReview` routes to a
+professional rather than to readiness, an `Unavailable` is never reported as a
+`Fail`, and a `Pass` that evaluated an earlier revision is stale rather than
+current. APV-07's own currency comparison is imported, so no competing notion of
+"current" exists. No score, average, weighting or majority appears anywhere.
+
+A profile's explicit constraints are **established, not assumed**. An evidence
+requirement's `acceptedTypes`, `registry` and `credential` are read from
+Protocol's own `CanonicalEvidence`, supplied as bounded input; an identity
+requirement's `registry` is read from the entry reference the case already holds,
+through APV-07's own comparison. A `Required` requirement whose constraint cannot
+be established is **not** satisfied — `requirement.constraint.unevaluated` is a
+blocker, never a footnote, because treating "we could not check it" as "it holds"
+would loosen the profile contract invisibly. On an `Optional` requirement the same
+finding is a warning and blocks nothing.
+
+**Delegation is not satisfaction.** APV-09 never recomputes a freshness window —
+APV-07 owns that — but "somebody else owns this" is not an answer either. An
+evidence requirement's `freshness` is discharged only by a current result for a
+`check.evidence.freshness` the pinned profile **explicitly declares**: a
+registered built-in is not a declared requirement. Undeclared, unexecuted, stale,
+`Fail`, `Unavailable` or `ManualReview` all leave the obligation undischarged,
+reported through APV-07's existing verification blockers filed against the
+evidence requirement. `Pass` discharges it and names the execution that did;
+`Warning` discharges it non-fatally with the warning preserved. Freshness on an
+identity, verification or attestation requirement has no evaluator anywhere, so
+it blocks when Required rather than being waved through under an invented check
+id.
+
+An attestation is authority over the revision it covers and no further. Where the
+case has moved past `resultingCaseRevision` and the intervening revisions are not
+accounted for, `attestation.currency.unresolved` is a **blocker** and the state is
+`ReviewPending` — APV-08's own contract is that a professional must never
+unknowingly attest a moving target. The historical artifact is untouched: not
+deleted, not invalidated, and no inference drawn about its signature. A further
+review on the newer basis clears it.
+
+Professional history is interpreted at the **highest review basis revision** for
+each attestation requirement, so an old `RequestMoreEvidence` stops dominating
+once a later review exists — while remaining permanently readable. Conflicting
+current positions block; they are never adjudicated.
+
+APV-08's hardening is re-established rather than relaxed: an `Attest` decision
+with no `CanonicalAttestation` does **not** satisfy an attestation requirement,
+and an artifact that cannot be shown to carry at least one usable
+`CanonicalProofRef` does not qualify as APV professional material. Presence of a
+proof reference is still not verification of one — nothing here resolves a proof
+or checks a signature.
+
+```text
+MaterialPresent            !=  requirement satisfied.
+Declaration satisfied      !=  the proposition is true.
+Evidence present           !=  evidence sufficient.
+PASS                       !=  universal truth.
+WARNING                    !=  PASS.
+UNAVAILABLE                !=  FAIL.
+A stale PASS               !=  a current PASS.
+Constraint unchecked       !=  constraint satisfied.
+Constraint delegated       !=  constraint evaluated.
+A registered check         !=  a declared requirement.
+Attest decision            !=  attestation material.
+Covers revision N          !=  authority over revision N+k.
+Proof reference present    !=  proof verified.
+Reject                     !=  legal invalidity.
+READY                      !=  PROTOCOLIZED  !=  TOKENIZABLE.
+READY                      !=  legal title   !=  legally transferable.
+```
+
+Every answer is bound to `evaluatedCaseRevision`, and
+`isProtocolizationReadinessCurrentForCase` is the guard APV-10 will use to refuse
+a readiness result the case has since moved past. Returning `Ready` executes
+nothing: no write, no anchor, no token, no signature, no case transition.
+
 ## What it does not contain
 
 No evidence, claim, attestation, verification, standing, credential, proof,
 provenance-source, subject-identity, principal-reference or integrity type — every
 one of those is Protocol's and is referenced, never redefined, and Protocol's
 `VerificationStatus` is neither widened nor reinterpreted. No identity resolution, no
-authority or delegation resolution, no readiness decision, no case-level verdict, no
+authority or delegation resolution, no protocolization *execution* of any kind, no
+`ProtocolizationResult`, no `Protocolizing` or `Protocolized` state, no
 reviewer assignment, queue, inbox, dashboard or professional workbench, no protocolization
 finalization, no registry connector, no fee assessment, no governance, no tokenization, and no
 database adapter or blob store (the case, evidence-intake, declaration, verification-result and
@@ -340,6 +449,8 @@ Protocol-declared port, bound in a composition root.
 - `docs/asset-protocolization/APV_07_VERIFICATION_PIPELINE.md` — the verification slice.
 - `docs/asset-protocolization/APV_08_PROFESSIONAL_ATTESTATION_WORKFLOW.md` — the professional
   attestation slice.
+- `docs/asset-protocolization/APV_09_PROTOCOLIZATION_STATE_MACHINE.md` — the state machine and
+  readiness slice.
 - `docs/asset-protocolization/README.md` — the workstream and the Gate A0 record.
 - `docs/architecture/adr-asset-protocolization-vertical-boundary.md` — the frozen
   boundary.
