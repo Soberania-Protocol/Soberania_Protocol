@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BUILT_IN_VERIFICATION_CHECKS = exports.contentDigestCheck = exports.competingDeclarationCheck = exports.declarationClaimTypeCheck = exports.evidenceFreshnessCheck = exports.identityStrategyCheck = exports.minimumMaterialCountCheck = exports.requiredMaterialPresentCheck = void 0;
+exports.registryEntryConforms = registryEntryConforms;
 const identity_1 = require("@aoc/protocol/identity");
 const requirements_1 = require("../requirements");
 const case_material_1 = require("../case/case-material");
@@ -246,6 +247,19 @@ exports.minimumMaterialCountCheck = Object.freeze({
 // ---------------------------------------------------------------------------
 // check.identity.strategy
 // ---------------------------------------------------------------------------
+/**
+ * Whether one registry entry reference conforms to a profile's registry
+ * constraint.
+ *
+ * Exported for reuse *inside* this package only — it is not part of the package
+ * facade. APV-09 asks the same mechanical question of the same Protocol
+ * vocabulary when it assesses an identity or evidence requirement, and a second
+ * copy of this comparison would be free to drift from this one.
+ *
+ * Structural only: `RegistryType`, `RegistryAuthorityLevel`, `RegistryEntryType`
+ * and an opaque namespace allow-list. No registry is named, no jurisdiction is
+ * known, and nothing here resolves the entry or establishes that it exists.
+ */
 function registryEntryConforms(entryRef, constraint) {
     if (constraint.acceptedTypes !== undefined &&
         !constraint.acceptedTypes.includes(entryRef.registryRef.type)) {

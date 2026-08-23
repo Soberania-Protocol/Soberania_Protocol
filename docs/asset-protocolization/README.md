@@ -44,7 +44,8 @@ TOKENIZER               issuance, contracts, custody, marketplace, settlement
 | APV-06 | [`APV_06_DECLARATION_CLAIM_PREPARATION.md`](./APV_06_DECLARATION_CLAIM_PREPARATION.md) | `VERIFIED` — declaration / claim preparation layer in `@aoc/asset-protocolization` |
 | APV-07 | [`APV_07_VERIFICATION_PIPELINE.md`](./APV_07_VERIFICATION_PIPELINE.md) | `VERIFIED` — verification pipeline in `@aoc/asset-protocolization` |
 | APV-08 | [`APV_08_PROFESSIONAL_ATTESTATION_WORKFLOW.md`](./APV_08_PROFESSIONAL_ATTESTATION_WORKFLOW.md) | `VERIFIED` — professional attestation workflow in `@aoc/asset-protocolization` |
-| APV-09…APV-20 | not started | — |
+| APV-09 | [`APV_09_PROTOCOLIZATION_STATE_MACHINE.md`](./APV_09_PROTOCOLIZATION_STATE_MACHINE.md) | `VERIFIED` — protocolization state machine and readiness evaluation in `@aoc/asset-protocolization` |
+| APV-10…APV-20 | not started | — |
 
 The ADR lives under `docs/architecture/` to follow this repository's existing ADR naming
 convention (`docs/architecture/adr-*.md`).
@@ -100,6 +101,13 @@ associates to a case as `ProtocolizationMaterialKind.Attestation` is a professio
 something downstream will be asked to rely on. Requiring the reference is not verifying it —
 APV-08 resolves no proof artifact and checks no signature — and Protocol's own type is
 unchanged.
+
+APV-09 discharges it a third time for readiness and likewise surfaced no gap. It introduces the
+semantic *requirement satisfied* — which no earlier slice was permitted to state — entirely
+inside the vertical: no `ReadinessStatus`, `ReadinessState` or asset-state member was added to
+Protocol for APV convenience, and `SovereignAssetState` is exactly what it was. It re-establishes
+APV-08's proof-reference invariant on the artifact itself rather than weakening it, and it
+verifies no proof and no signature while doing so. Protocol was not modified.
 
 ### `U-2` — External registries
 
@@ -193,6 +201,15 @@ the same reason — a check history whose entries can be rewritten cannot show t
 passed, or once failed. No database adapter, migration or schema was added. See
 [`APV_07_VERIFICATION_PIPELINE.md`](./APV_07_VERIFICATION_PIPELINE.md#19-persistence).
 
+APV-09 deliberately extends it **not at all**. Readiness is a pure deterministic projection of
+records that are already immutable and already audited, so there is no readiness repository, no
+persisted readiness state, no evaluation identifier and no readiness event: a stored copy of a
+conclusion that can be recomputed exactly would be free to drift from the facts justifying it,
+with nothing anywhere to explain the divergence. If a genuine audit obligation for readiness
+history later arises, the additive amendment is append-only, tenant-scoped, revision-bound
+records — a different decision with a different justification. See
+[`APV_09_PROTOCOLIZATION_STATE_MACHINE.md`](./APV_09_PROTOCOLIZATION_STATE_MACHINE.md#20-persistence-events-and-identity).
+
 APV-08 extends it a fourth time: `ProfessionalReviewRequestRepository` and
 `ProfessionalReviewDecisionRepository` are declared in
 `packages/asset-protocolization/src/attestation/review-repository.ts` with one in-memory
@@ -228,7 +245,11 @@ added. See
 11. `APV_08_PROFESSIONAL_ATTESTATION_WORKFLOW.md` — how a professional reviews a bounded,
     revision-bound snapshot of a case, why a review decision is not a `CanonicalAttestation`,
     and why *attested* is still never *ready*.
-12. `docs/constitution/ARCHITECTURAL-LAWS.md` — which mistakes fail the build.
+12. `APV_09_PROTOCOLIZATION_STATE_MACHINE.md` — how the accumulated dossier is finally
+    *interpreted*, why readiness is derived rather than commanded and orthogonal to APV-04's
+    lifecycle, why `MaterialPresent` is still never `Satisfied`, and why `READY` is never
+    protocolized, tokenizable or legally transferable.
+13. `docs/constitution/ARCHITECTURAL-LAWS.md` — which mistakes fail the build.
 
 ## Workstream B
 

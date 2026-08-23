@@ -1,3 +1,5 @@
+import type { CanonicalRegistryEntryRef } from '@aoc/protocol/claims';
+import type { AssetRegistryConstraint } from '../constraints';
 import type { AssetVerificationCheck } from './verification-check';
 /**
  * *Every requirement the pinned profile marks `Required` — other than its
@@ -58,6 +60,20 @@ export declare const requiredMaterialPresentCheck: AssetVerificationCheck;
  * nothing about whether the evidence supports anything.
  */
 export declare const minimumMaterialCountCheck: AssetVerificationCheck;
+/**
+ * Whether one registry entry reference conforms to a profile's registry
+ * constraint.
+ *
+ * Exported for reuse *inside* this package only — it is not part of the package
+ * facade. APV-09 asks the same mechanical question of the same Protocol
+ * vocabulary when it assesses an identity or evidence requirement, and a second
+ * copy of this comparison would be free to drift from this one.
+ *
+ * Structural only: `RegistryType`, `RegistryAuthorityLevel`, `RegistryEntryType`
+ * and an opaque namespace allow-list. No registry is named, no jurisdiction is
+ * known, and nothing here resolves the entry or establishes that it exists.
+ */
+export declare function registryEntryConforms(entryRef: CanonicalRegistryEntryRef, constraint: AssetRegistryConstraint): boolean;
 /**
  * *Every `Required` identity requirement of the pinned profile is evidenced by
  * the strategies it accepts, and any registry entry offered against it conforms
