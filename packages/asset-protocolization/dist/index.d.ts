@@ -87,13 +87,32 @@
  * protocolized, tokenizable, legally transferable or an Enterprise
  * authorization.
  *
+ * APV-10 delivers the eighth: **protocolization execution** — the act APV-09's
+ * answer authorizes. It takes one case, one APV-09 readiness evaluation and one
+ * request, refuses unless that evaluation is well-formed, `Ready` and still
+ * current for the exact tenant, case, pinned profile version and case revision
+ * in hand, and produces one immutable `ProtocolizationResult`: the auditable
+ * record that this exact revision was carried through the workflow, quoting the
+ * conclusion it stood on and naming the dossier it rested on. It evaluates no
+ * readiness of its own, mutates no case, adds no lifecycle state, mints no
+ * Protocol record and touches nothing outside memory.
+ *
+ * `Ready` is never executed; `Ready` at revision N is never `Ready` at revision
+ * N+1; a stale `Ready` never authorizes an execution; a warning never becomes a
+ * blocker after APV-09 has answered `Ready`; a second result id never buys a
+ * second protocolization of one basis; a later revision is never automatically
+ * protocolized by an earlier result; and a `ProtocolizationResult` is never legal
+ * title, never an ownership transfer, never a government registration, never a
+ * token and never an Enterprise authorization.
+ *
  * See `docs/asset-protocolization/APV_03_ASSET_PROFILE_FRAMEWORK.md`,
  * `docs/asset-protocolization/APV_04_PROTOCOLIZATION_CASE.md`,
  * `docs/asset-protocolization/APV_05_EVIDENCE_INTAKE.md`,
  * `docs/asset-protocolization/APV_06_DECLARATION_CLAIM_PREPARATION.md`,
  * `docs/asset-protocolization/APV_07_VERIFICATION_PIPELINE.md`,
  * `docs/asset-protocolization/APV_08_PROFESSIONAL_ATTESTATION_WORKFLOW.md` and
- * `docs/asset-protocolization/APV_09_PROTOCOLIZATION_STATE_MACHINE.md`.
+ * `docs/asset-protocolization/APV_09_PROTOCOLIZATION_STATE_MACHINE.md` and
+ * `docs/asset-protocolization/APV_10_PROTOCOLIZATION_EXECUTION.md`.
  */
 export { ASSET_IDENTIFIER_MAX_LENGTH, assetProfileVersionKey, compareAssetProfileVersions, isValidAssetCategoryId, isValidAssetProfileId, isValidAssetProfileVersion, isValidAssetRequirementConditionId, isValidAssetRequirementId, isValidAssetVerificationCheckId, } from './identifiers';
 export type { AssetCategoryId, AssetProfileId, AssetProfileVersion, AssetRequirementConditionId, AssetRequirementId, AssetVerificationCheckId, } from './identifiers';
@@ -230,4 +249,19 @@ export { getProtocolizationRequirementAssessment, isProtocolizationReadinessCurr
 export type { ProtocolizationReadinessReasonFilter } from './state-machine/readiness-projections';
 export { PROTOCOLIZATION_READINESS_ERROR_CODES, ProtocolizationReadinessError, } from './state-machine/readiness-errors';
 export type { ProtocolizationReadinessErrorCode, ProtocolizationReadinessErrorDetails, } from './state-machine/readiness-errors';
+export { isValidProtocolizationResultId } from './execution/execution-identifiers';
+export type { ProtocolizationResultId } from './execution/execution-identifiers';
+export { PROTOCOLIZATION_EXECUTION_RESULT_SCHEMA_VERSION } from './execution/protocolization-result';
+export type { ProtocolizationExecutionMaterialRef, ProtocolizationReadinessBasis, ProtocolizationResult, } from './execution/protocolization-result';
+export type { ProtocolizationExecutionOutcome, ProtocolizationExecutionRequest, } from './execution/execution-request';
+export { PROTOCOLIZATION_EXECUTION_VALIDATION_CODES, isAdmissibleProtocolizationExecutionRequest, isValidProtocolizationResult, validateProtocolizationExecutionRequest, validateProtocolizationReadinessForExecution, validateProtocolizationResult, } from './execution/execution-validation';
+export type { ProtocolizationExecutionValidationCode, ProtocolizationExecutionValidationResult, } from './execution/execution-validation';
+export { PROTOCOLIZATION_EXECUTION_EVENT_TYPES } from './execution/execution-events';
+export type { ProtocolizationExecutedEvent, ProtocolizationExecutionEvent, ProtocolizationExecutionEventType, } from './execution/execution-events';
+export { executeProtocolization, reconstituteProtocolizationResult, } from './execution/execution-operations';
+export { createInMemoryProtocolizationResultRepository } from './execution/execution-repository';
+export type { ProtocolizationResultRepository } from './execution/execution-repository';
+export { isProtocolizationResultCurrentForCase, listProtocolizationResultsForRevision, } from './execution/execution-projections';
+export { PROTOCOLIZATION_EXECUTION_ERROR_CODES, ProtocolizationExecutionError, } from './execution/execution-errors';
+export type { ProtocolizationExecutionErrorCode, ProtocolizationExecutionErrorDetails, } from './execution/execution-errors';
 //# sourceMappingURL=index.d.ts.map

@@ -45,7 +45,9 @@ TOKENIZER               issuance, contracts, custody, marketplace, settlement
 | APV-07 | [`APV_07_VERIFICATION_PIPELINE.md`](./APV_07_VERIFICATION_PIPELINE.md) | `VERIFIED` — verification pipeline in `@aoc/asset-protocolization` |
 | APV-08 | [`APV_08_PROFESSIONAL_ATTESTATION_WORKFLOW.md`](./APV_08_PROFESSIONAL_ATTESTATION_WORKFLOW.md) | `VERIFIED` — professional attestation workflow in `@aoc/asset-protocolization` |
 | APV-09 | [`APV_09_PROTOCOLIZATION_STATE_MACHINE.md`](./APV_09_PROTOCOLIZATION_STATE_MACHINE.md) | `VERIFIED` — protocolization state machine and readiness evaluation in `@aoc/asset-protocolization` |
-| APV-10…APV-20 | not started | — |
+| APV-10 | [`APV_10_PROTOCOLIZATION_EXECUTION.md`](./APV_10_PROTOCOLIZATION_EXECUTION.md) | `VERIFIED` — protocolization execution and `ProtocolizationResult` in `@aoc/asset-protocolization` |
+| **GATE A1** | **Generic Asset Protocolization foundation complete** | **`READY_FOR_REVIEW`** — see below |
+| APV-11…APV-20 | not started | — |
 
 The ADR lives under `docs/architecture/` to follow this repository's existing ADR naming
 convention (`docs/architecture/adr-*.md`).
@@ -108,6 +110,14 @@ inside the vertical: no `ReadinessStatus`, `ReadinessState` or asset-state membe
 Protocol for APV convenience, and `SovereignAssetState` is exactly what it was. It re-establishes
 APV-08's proof-reference invariant on the artifact itself rather than weakening it, and it
 verifies no proof and no signature while doing so. Protocol was not modified.
+
+APV-10 discharges it a fourth time for execution and likewise surfaced no gap. The artifact a
+successful execution produces — `ProtocolizationResult` — is owned by the vertical, not by
+Protocol: no `ProtocolizedAsset`, `SoberaniaAsset` or `AssetProtocolizationRecord` core type was
+added or proposed, and no Protocol consumer is forced to learn that asset protocolization
+exists. The slice mints no canonical record of any kind, builds and signs no
+`SignedSovereignManifest`, computes no digest and verifies no signature; every reference the
+result carries is one the case already held. Protocol was not modified.
 
 ### `U-2` — External registries
 
@@ -221,6 +231,40 @@ record, not the vertical's to take custody of). No database adapter, migration o
 added. See
 [`APV_08_PROFESSIONAL_ATTESTATION_WORKFLOW.md`](./APV_08_PROFESSIONAL_ATTESTATION_WORKFLOW.md#20-persistence).
 
+APV-10 extends it a fifth time: `ProtocolizationResultRepository` is declared in
+`packages/asset-protocolization/src/execution/execution-repository.ts` with one in-memory
+implementation, stores *execution results* rather than manifests or envelopes, and is
+append-only — there is no update, no delete and no supersession pointer, because a
+protocolization history whose entries can be rewritten or removed cannot show that a case
+revision was ever protocolized. It carries two distinct uniqueness rules: `(tenantId, resultId)`
+for identity, and `(tenantId, caseId, profile, executedCaseRevision)` for the execution basis —
+the second is what stops one case revision being protocolized twice under two different names.
+No database adapter, migration or schema was added. See
+[`APV_10_PROTOCOLIZATION_EXECUTION.md`](./APV_10_PROTOCOLIZATION_EXECUTION.md#17-persistence).
+
+## Gate A1 — `READY_FOR_REVIEW`
+
+```text
+GATE A1 = READY_FOR_REVIEW
+```
+
+APV-10 completes the **generic** Asset Protocolization foundation:
+
+```text
+AssetProfile + ProtocolizationCase + Evidence + Declarations + Verification
+  + Professional attestation + Readiness + Execution
+= Asset Protocolization Foundation
+```
+
+Every slice of it is asset-agnostic. No concrete asset profile exists, no production code
+branches on an asset category or a profile id, and the same execution path is exercised for a
+subject with a canonical byte representation and a subject named only inside an external
+namespace.
+
+Ratification is a separate act by the Founder / Soberanía Architecture Authority, exactly as
+Gate A0 was. APV-10 does not self-ratify, and `GATE A1 = RATIFIED` is not claimed anywhere.
+APV-11 (`digital.artifact.v1`, the first concrete asset profile) begins only after that act.
+
 ## Reading order for an implementer
 
 1. `docs/architecture/sovereign-asset-core.md` — the frozen substrate and its invariants.
@@ -249,7 +293,12 @@ added. See
     *interpreted*, why readiness is derived rather than commanded and orthogonal to APV-04's
     lifecycle, why `MaterialPresent` is still never `Satisfied`, and why `READY` is never
     protocolized, tokenizable or legally transferable.
-13. `docs/constitution/ARCHITECTURAL-LAWS.md` — which mistakes fail the build.
+13. `APV_10_PROTOCOLIZATION_EXECUTION.md` — how a case that APV-09 found `Ready` is finally
+    *executed*, why a readiness evaluation must still be current for the exact revision in
+    hand, why the result is an immutable artifact rather than a flag on the case, and why a
+    `ProtocolizationResult` is never legal title, an ownership transfer, a government
+    registration, a token or an Enterprise authorization.
+14. `docs/constitution/ARCHITECTURAL-LAWS.md` — which mistakes fail the build.
 
 ## Workstream B
 
