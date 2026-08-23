@@ -407,9 +407,72 @@ READY                      !=  legal title   !=  legally transferable.
 ```
 
 Every answer is bound to `evaluatedCaseRevision`, and
-`isProtocolizationReadinessCurrentForCase` is the guard APV-10 will use to refuse
-a readiness result the case has since moved past. Returning `Ready` executes
+`isProtocolizationReadinessCurrentForCase` is the guard APV-10 uses to refuse a
+readiness result the case has since moved past. Returning `Ready` executes
 nothing: no write, no anchor, no token, no signature, no case transition.
+
+### APV-10 — protocolization execution
+
+The act APV-09's answer authorizes. One operation takes a case, an APV-09
+readiness evaluation and a request; refuses unless that evaluation is well-formed,
+`Ready` and still current for the exact tenant, case, pinned profile version and
+case revision in hand; and returns one immutable `ProtocolizationResult` plus the
+single `ProtocolizationExecuted` fact it produced.
+
+```ts
+import {
+  createInMemoryProtocolizationResultRepository,
+  evaluateProtocolizationReadiness,
+  executeProtocolization,
+} from '@aoc/asset-protocolization';
+
+const readiness = evaluateProtocolizationReadiness(context, protocolizationCase, inputs);
+
+const { result, event } = executeProtocolization(context, protocolizationCase, readiness, {
+  resultId: 'protocolization-result-0001',
+  expectedCaseRevision: protocolizationCase.revision,
+});
+
+// Persistence is the composition layer's; the operation holds no repository.
+const results = createInMemoryProtocolizationResultRepository();
+results.save(result);
+```
+
+It evaluates no readiness of its own — the operation takes no dossier at all, so
+re-deriving a conclusion is not something it declined to do, it is something it
+cannot express. It mutates no case, adds no lifecycle state, writes no
+protocolized flag anywhere, mints no Protocol record, builds and signs no
+manifest, computes no digest and touches nothing outside memory.
+
+A result is bound to one exact case revision, permanently. At most one successful
+result exists per `(tenant, case, pinned profile, revision)`; a later revision
+that APV-09 finds `Ready` again produces a **second** result beside the first, and
+the first is never rewritten, flagged or superseded.
+
+```text
+READY                      !=  EXECUTED.
+Ready at revision N        !=  Ready at revision N+1.
+A stale READY              !=  an authorization.
+A warning after READY      !=  a blocker.
+A second result id         !=  a second protocolization.
+An older result            !=  a statement about the current revision.
+ProtocolizationResult      !=  legal title  !=  ownership transfer.
+ProtocolizationResult      !=  government registration.
+ProtocolizationResult      !=  token        !=  Enterprise authorization.
+```
+
+A `ProtocolizationResult` is a technical and product artifact recording that the
+Asset Protocolization workflow completed over one case revision. It is not, in any
+jurisdiction, a legal title category, and executing upgrades the truth of nothing
+it names: a claim is still a claim, evidence is still evidence, an attestation is
+still one professional's scoped position.
+
+This record is deliberately **not** the APV-02 §2.1 `ProtocolizationResultV1`
+envelope, which additionally carries a `SignedSovereignManifest` and the
+`ResourceRef` Enterprise addresses. Producing one needs a registrant and a signing
+key, and no slice establishes either — so the envelope stays deferred, this record
+carries its own schema identifier (`aoc-protocolization-execution/1`), and a later
+slice with manifest issuance projects one from the other.
 
 ## What it does not contain
 
@@ -417,12 +480,13 @@ No evidence, claim, attestation, verification, standing, credential, proof,
 provenance-source, subject-identity, principal-reference or integrity type — every
 one of those is Protocol's and is referenced, never redefined, and Protocol's
 `VerificationStatus` is neither widened nor reinterpreted. No identity resolution, no
-authority or delegation resolution, no protocolization *execution* of any kind, no
-`ProtocolizationResult`, no `Protocolizing` or `Protocolized` state, no
-reviewer assignment, queue, inbox, dashboard or professional workbench, no protocolization
-finalization, no registry connector, no fee assessment, no governance, no tokenization, and no
-database adapter or blob store (the case, evidence-intake, declaration, verification-result and
-professional-review persistence **ports** are here; binding any of them to a store is not). No cryptography of its own: no
+authority or delegation resolution, no `Protocolizing` or `Protocolized` lifecycle state and no
+protocolized flag on anything, no reviewer assignment, queue, inbox, dashboard or professional
+workbench, no manifest construction or signing, no registry connector, no fee assessment, no
+governance, no tokenization, and no
+database adapter or blob store (the case, evidence-intake, declaration, verification-result,
+professional-review and protocolization-result persistence **ports** are here; binding any of
+them to a store is not). No cryptography of its own: no
 hashing algorithm, signature format, key model or proof format is defined here, and no
 signature is ever synthesized — signing is a narrow injected port with no production
 implementation in this package. No file,
@@ -451,6 +515,8 @@ Protocol-declared port, bound in a composition root.
   attestation slice.
 - `docs/asset-protocolization/APV_09_PROTOCOLIZATION_STATE_MACHINE.md` — the state machine and
   readiness slice.
+- `docs/asset-protocolization/APV_10_PROTOCOLIZATION_EXECUTION.md` — the protocolization
+  execution slice.
 - `docs/asset-protocolization/README.md` — the workstream and the Gate A0 record.
 - `docs/architecture/adr-asset-protocolization-vertical-boundary.md` — the frozen
   boundary.

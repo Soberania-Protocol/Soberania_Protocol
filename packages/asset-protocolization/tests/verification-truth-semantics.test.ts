@@ -350,14 +350,17 @@ describe('verification truth boundaries', () => {
     });
 
     it('adds no APV-09 state, APV-10 execution or Enterprise governance concept', () => {
-      const code = collect(sourceRoot)
-        .map((path) =>
-          readFileSync(path, 'utf8')
-            .replace(/\/\*[\s\S]*?\*\//g, ' ')
-            .replace(/(^|[^:])\/\/[^\n]*/g, '$1 '),
-        )
-        .join('\n');
+      const stripped = (root: string): string =>
+        collect(root)
+          .map((path) =>
+            readFileSync(path, 'utf8')
+              .replace(/\/\*[\s\S]*?\*\//g, ' ')
+              .replace(/(^|[^:])\/\/[^\n]*/g, '$1 '),
+          )
+          .join('\n');
 
+      // Nothing in the package may reach for a readiness state, a lifecycle
+      // member that does not exist, an Enterprise engine or a tokenization verb.
       for (const forbidden of [
         'EVIDENCE_PENDING',
         'VERIFICATION_PENDING',
@@ -366,14 +369,19 @@ describe('verification truth boundaries', () => {
         'PROTOCOLIZING',
         'PROTOCOLIZED',
         'SUPERSEDED',
-        'ProtocolizationResult',
         'governedResource',
         'TOKENIZE',
         'AuthorityEngine',
         'PolicyEngine',
       ]) {
-        expect(code).not.toContain(forbidden);
+        expect(stripped(sourceRoot)).not.toContain(forbidden);
       }
+
+      // `ProtocolizationResult` is APV-10's own artifact and now legitimately
+      // exists under `src/execution/`. What this suite asserts is that the
+      // *verification* slice never reaches for it: APV-07 records findings, and
+      // a finding is never an execution.
+      expect(stripped(verificationRoot)).not.toContain('ProtocolizationResult');
     });
 
     it('never writes a truth flag onto evidence, declarations or the case', async () => {
