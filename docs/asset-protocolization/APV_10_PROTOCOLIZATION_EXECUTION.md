@@ -835,12 +835,20 @@ a subject with a canonical byte representation and a subject named only inside a
 external namespace.
 
 ```text
-GATE A1  READY_FOR_REVIEW
+GATE A1  RATIFIED   (2026-08-23)
 ```
 
-Ratification is a separate act by the Founder / Soberanía Architecture Authority,
-exactly as Gate A0 was. This slice does not self-ratify.
+Ratification was a separate act by the Founder / Soberanía Architecture Authority,
+exactly as Gate A0 was — this slice did not self-ratify, and the state above was
+`READY_FOR_REVIEW` when APV-10 was delivered. The ratification record, including
+what the gate deliberately does **not** cover, lives in
+[`README.md`](./README.md#gate-a1--ratified).
+
+Ratifying the gate changes nothing about this slice. In particular it does not
+build the APV-02 §2.1 envelope, does not sign a manifest, does not discharge
+`U-3`, and gives no protocolization any legal effect — §25's boundaries stand
+exactly as written.
 
 After Gate A1: **APV-11 — `digital.artifact.v1`**, the first concrete asset
-profile. It is deliberately not started, and no concrete asset semantics appear
-anywhere in this slice.
+profile. It is not started, and no concrete asset semantics appear anywhere in
+this slice.
