@@ -147,3 +147,31 @@ a rollback plan ([`ROLLBACK_PLAN.md`](ROLLBACK_PLAN.md)), known limitations
 `npm run protocol:rc:check` (`scripts/validate-release-candidate.mjs`, run by
 `.github/workflows/rc-validation.yml`). Changeset-version, publish, and security dry-run evidence:
 [`evidence/rc-dry-run-2026-07-15.md`](evidence/rc-dry-run-2026-07-15.md).
+
+## 7. P0-PKG-01 — installable RC artifact and the frozen integration contract (2026-08-24)
+
+Added after the sprint above, against the current tree. Status is unchanged: **NOT PUBLISHED**,
+`private: true`, no registry, no tag, no version cut.
+
+What changed:
+
+- **The candidate is now emitted, not just provable.** `npm run protocol:rc:artifact` writes a
+  reproducible `aoc-protocol-<version>.tgz` plus a ready-to-vendor `protocol-consumer.lock.json`,
+  `SHA256SUMS` and install/verify instructions into the git-ignored `dist-rc/`. Current artifact
+  identity: SHA-256 `a404ba9c84be4f8b63a259fe6643e98c409ee060a4ec1396c344ce0b22ec97c3` — see
+  [`evidence/rc-artifact-2026-08-24.md`](evidence/rc-artifact-2026-08-24.md), which also records why
+  it supersedes `2485edd0…6556`.
+- **The integration surface is frozen and shipped.** `packages/protocol/integration-contract.json`
+  (`aoc.cross-repository-integration@1.0.0`) travels inside the tarball, so a consumer verifies
+  offline what it installed. Normative prose:
+  [`../integration/CROSS_REPO_INTEGRATION_CONTRACT.md`](../integration/CROSS_REPO_INTEGRATION_CONTRACT.md).
+- **The freeze is enforced.** `npm run check:integration-contract` fails on any drift between the
+  contract, `packages/protocol/package.json` and `docs/protocol/PUBLIC_API.md`; it runs inside
+  `protocol:rc:check`, `protocol:release:check` and `validate:release`. A fourth consumer fixture
+  verifies the contract from a real install and asserts undeclared subpaths still do not resolve.
+
+What remains open, and is not closed by this sprint: every founder decision in the approval gate
+below, and the Enterprise runtime identifier. PMFreak declares `@aoc-enterprise/runtime`; this
+repository does not build, own or publish an artifact under that name, and holds no evidence that
+Soberanía Enterprise does. Until that is settled Enterprise-side, the three-repository packaging
+proof cannot close — the Protocol third of it is complete.

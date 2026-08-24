@@ -1,0 +1,10 @@
+{
+  "name": "aoc-protocol-contract-verification-consumer",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Proves a foreign repository can install the packed @aoc/protocol artifact and verify the frozen cross-repository integration contract from node_modules, without the monorepo.",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js"
+  }
+}

@@ -113,6 +113,18 @@ registry.register(AdapterTokens.RevocationLookup, myRevocationLookupImpl, { impl
 See [`docs/protocol/PUBLIC_API.md`](../../docs/protocol/PUBLIC_API.md) for the full symbol-level table
 and stability classification.
 
+The package also ships `@aoc/protocol/integration-contract.json` — the frozen cross-repository
+integration contract. It records this package's identity, the complete contracted export set with
+stability classes, the install forms a consumer may use, and what a consumer owes in return, so a
+downstream repository can verify offline that what it installed is what it agreed to depend on:
+
+```js
+const contract = require('@aoc/protocol/integration-contract.json');
+// contract.contractVersion === '1.0.0', contract.status === 'frozen'
+```
+
+See [`docs/integration/CROSS_REPO_INTEGRATION_CONTRACT.md`](../../docs/integration/CROSS_REPO_INTEGRATION_CONTRACT.md).
+
 Deep imports (`@aoc/protocol/dist/...`, `@aoc/protocol/src/...`, `@aoc/protocol/internal/...`) are not
 supported and are verified to fail to resolve (see `scripts/assert-invalid-imports.mjs`).
 

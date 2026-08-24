@@ -76,11 +76,13 @@
       "types": "./dist/sovereignty-capabilities/index.d.ts",
       "default": "./dist/sovereignty-capabilities/index.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./integration-contract.json": "./integration-contract.json"
   },
   "files": [
     "dist",
-    "NOTICE"
+    "NOTICE",
+    "integration-contract.json"
   ],
   "scripts": {
     "build": "tsc -b",

@@ -17,6 +17,9 @@ const consumers = [
   { name: 'typescript-cjs', build: true },
   { name: 'javascript-cjs', build: false },
   { name: 'typescript-esm', build: true },
+  // Stands in for a downstream repository verifying the frozen cross-repository integration
+  // contract out of the installed package — see docs/integration/CROSS_REPO_INTEGRATION_CONTRACT.md.
+  { name: 'contract-verification', build: false },
 ];
 
 const results = [];

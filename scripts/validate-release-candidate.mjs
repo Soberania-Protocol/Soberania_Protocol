@@ -5,8 +5,9 @@
 //
 // Coverage: build, tests, typecheck, public-API governance, symbol parity, version graph,
 // Changeset status, package metadata, the private-publication block, tarball generation +
-// contents + reproducibility, committed manifest/SBOM evidence freshness, consumer fixtures,
-// release-documentation existence + internal links + required content markers.
+// contents + reproducibility, the frozen cross-repository integration contract, committed
+// manifest/SBOM evidence freshness, consumer fixtures, release-documentation existence +
+// internal links + required content markers.
 import { execSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
@@ -38,6 +39,8 @@ check('public API governance', () => run('npm run check:public-export-governance
 check('symbol parity', () => run('npm run check:symbol-parity'));
 check('version graph', () => run('npm run check:version-graph'));
 check('Changeset status', () => run('npx changeset status'));
+// The frozen cross-repository integration contract must still describe the package it ships in.
+check('integration contract', () => run('npm run check:integration-contract'));
 
 // Rejects duplicate keys anywhere in a JSON document. JSON.parse silently keeps the last
 // value for a duplicated key, so license-metadata ambiguity (e.g. "license" declared twice
@@ -212,8 +215,10 @@ try {
       .map((line) => line.replace(/^package\//, ''));
     const leaked = entries.filter((entry) => /__tests__|__snapshots__|fixture|\.env|secret|coverage|(^|\/)src\//i.test(entry));
     if (leaked.length) throw new Error(`disallowed entries in tarball: ${leaked.join(', ')}`);
-    if (!entries.includes('LICENSE') || !entries.includes('README.md') || !entries.includes('NOTICE')) {
-      throw new Error('tarball must include LICENSE, NOTICE, and README.md');
+    for (const required of ['LICENSE', 'NOTICE', 'README.md', 'integration-contract.json']) {
+      if (!entries.includes(required)) {
+        throw new Error(`tarball must include ${required} (missing: ${required})`);
+      }
     }
   });
   check('reproducibility', () => {
@@ -263,6 +268,7 @@ const requiredDocs = [
   'docs/protocol/PUBLIC_API.md',
   'docs/versioning-and-stability.md',
   'docs/integration/CONSUMER_MIGRATION_GUIDE.md',
+  'docs/integration/CROSS_REPO_INTEGRATION_CONTRACT.md',
   'docs/release/PACKAGE_DISTRIBUTION_STRATEGY.md',
   'docs/release/PRERELEASE_POLICY.md',
   'docs/release/RELEASE_CANDIDATE_READINESS.md',

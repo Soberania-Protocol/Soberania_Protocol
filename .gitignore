@@ -2,6 +2,11 @@ node_modules/
 *.tsbuildinfo
 *.tgz
 
+# Release-candidate artifacts emitted by `npm run protocol:rc:artifact`. The bytes are a
+# pure function of the commit (reproducible pack), so the commit plus the checksum recorded
+# under docs/release/evidence/ is the record — the artifact itself is never committed.
+/dist-rc/
+
 # test-consumers/ fixtures are installed/built into temp copies by
 # scripts/validate-protocol-consumer.mjs; local ad-hoc runs inside the
 # checked-in fixture dirs should not leave build/lockfile artifacts behind.

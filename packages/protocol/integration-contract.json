@@ -1,0 +1,121 @@
+{
+  "_comment": "Frozen cross-repository integration contract for Soberanía Protocol. Shipped inside the @aoc/protocol tarball so a consumer can verify, offline and without network access, that what it installed is the surface it agreed to depend on. This file describes an integration surface; it authorizes no publication, deployment, registry access, or release. Normative prose: docs/integration/CROSS_REPO_INTEGRATION_CONTRACT.md in Soberania-Protocol/Soberania_Protocol.",
+  "contract": "aoc.cross-repository-integration",
+  "contractVersion": "1.0.0",
+  "status": "frozen",
+  "frozenAt": "2026-08-24",
+  "frozenBy": "P0-PKG-01",
+  "normativeDocument": "docs/integration/CROSS_REPO_INTEGRATION_CONTRACT.md",
+  "protocol": {
+    "role": "producer",
+    "repository": "Soberania-Protocol/Soberania_Protocol",
+    "packageRepositoryUrl": "git+https://github.com/Architects-of-Change-Protocol/Architects_of_Change_Protocol.git",
+    "packageRepositoryUrlNote": "packages/protocol/package.json still declares the pre-rebrand slug, as does the rest of this repository (frontend, docs, and tests assert it). The git remote this contract was frozen from is Soberania-Protocol/Soberania_Protocol. Both identifiers are recorded rather than reconciled: whether they are one renamed repository is a GitHub-side fact this repository does not evidence, and consumers follow the URL in the package metadata.",
+    "package": "@aoc/protocol",
+    "version": "0.1.0",
+    "license": "Apache-2.0",
+    "private": true,
+    "engines": { "node": ">=20" },
+    "moduleFormat": "commonjs",
+    "esmConsumption": "supported via Node's CommonJS named-export analysis; this is NOT a dual package — there are no separate import/require export conditions",
+    "runtimeDependencies": {},
+    "distribution": {
+      "state": "internal-tarball",
+      "artifactName": "aoc-protocol-<version>.tgz",
+      "producedBy": "npm run protocol:rc:artifact",
+      "reproducible": true,
+      "integrityRecordedIn": "dist-rc/protocol-consumer.lock.json and docs/release/evidence/",
+      "registryPublication": "not performed — founder-gated (docs/release/RELEASE_AUTHORITY.md, docs/release/PRERELEASE_POLICY.md)"
+    },
+    "exports": [
+      { "path": ".", "stability": "stable", "kind": "type-only" },
+      { "path": "./contracts", "stability": "stable", "kind": "type-only" },
+      { "path": "./errors", "stability": "stable", "kind": "type-only" },
+      { "path": "./claims", "stability": "stable", "kind": "mixed" },
+      { "path": "./adapters", "stability": "experimental", "kind": "type-only" },
+      { "path": "./runtime-registry", "stability": "experimental", "kind": "runtime" },
+      { "path": "./canonical", "stability": "stable-expanding", "kind": "runtime" },
+      { "path": "./identity", "stability": "stable-expanding", "kind": "mixed" },
+      { "path": "./manifest", "stability": "stable-expanding", "kind": "mixed" },
+      { "path": "./portability", "stability": "stable", "kind": "mixed" },
+      { "path": "./interoperability", "stability": "stable", "kind": "mixed" },
+      { "path": "./licensing", "stability": "stable", "kind": "mixed" },
+      { "path": "./governance-compatibility", "stability": "stable", "kind": "mixed" },
+      { "path": "./sovereignty-capabilities", "stability": "stable", "kind": "mixed" },
+      { "path": "./package.json", "stability": "metadata", "kind": "json" },
+      { "path": "./integration-contract.json", "stability": "metadata", "kind": "json" }
+    ],
+    "forbiddenImportForms": [
+      "@aoc/protocol/src/*",
+      "@aoc/protocol/dist/*",
+      "@aoc/protocol/internal/*",
+      "any path into the installed package that is not a declared export key"
+    ],
+    "guarantees": [
+      "zero runtime dependencies",
+      "no import of Enterprise, PMFreak, persistence, transport, or observability implementations",
+      "two consecutive packs of one commit are byte-identical",
+      "the tarball contains dist, LICENSE, NOTICE, README.md and this contract file — no src, tests, fixtures, or secrets"
+    ]
+  },
+  "enterprise": {
+    "role": "producer-and-consumer",
+    "repository": "Architects-of-Change-Protocol/AOC-Enterprise",
+    "evidence": "docs/release/REFERENCE_CONSUMER_EVIDENCE.md",
+    "consumesFromProtocol": {
+      "package": "@aoc/protocol",
+      "installForm": "vendored tarball pinned by checksum",
+      "lockFile": "protocol-consumer.lock.json",
+      "verified": true
+    },
+    "producesForPmfreak": {
+      "declaredByPmfreakAs": "@aoc-enterprise/runtime",
+      "producedByThisRepository": false,
+      "status": "unresolved",
+      "note": "This repository builds an Assurance workspace named @aoc/enterprise under enterprise/. It does not build, own, or publish an artifact named @aoc-enterprise/runtime, and it holds no evidence that Soberanía Enterprise publishes one. Which repository owns that identifier, and under which name it is distributed, is an Enterprise-side fact that must be recorded before the three-repository packaging proof can close."
+    }
+  },
+  "pmfreak": {
+    "role": "consumer",
+    "repository": "not evidenced in this repository",
+    "currentDeclaration": {
+      "@aoc/protocol": "file:src/aoc/protocol",
+      "@aoc-enterprise/runtime": "file:src/aoc/enterprise"
+    },
+    "currentDeclarationClassification": "repository-local source copy — not a packaged dependency; it proves nothing about independent packaging",
+    "requiredDeclaration": {
+      "@aoc/protocol": "file:./vendor/aoc-protocol-<version>.tgz (until a registry is authorized, then the exact version)",
+      "@aoc-enterprise/runtime": "the packaged form Soberanía Enterprise distributes, once the unresolved item above is closed"
+    },
+    "obligations": [
+      "install the packed artifact, never a path into a source tree",
+      "record repository, commit, version and SHA-256 of the installed artifact in a consumer lock file",
+      "verify the installed package's integration-contract.json contractVersion against the version it was built for",
+      "import only through declared export keys",
+      "run a blocking CI job that reinstalls the pinned artifact and re-runs the consumer battery"
+    ]
+  },
+  "installForms": {
+    "allowed": [
+      "packed tarball pinned by SHA-256 (current state)",
+      "exact semver version from an authorized registry (after a founder publication decision)"
+    ],
+    "forbidden": [
+      "workspace: specifiers",
+      "file: specifiers pointing at a source tree rather than a packed tarball",
+      "git+ / link: specifiers",
+      "copied or vendored source, type shims, ambient declarations, or hand-maintained duplicates of protocol shapes"
+    ]
+  },
+  "changeControl": {
+    "frozenMeaning": "The export set, package identity, install forms and consumer obligations recorded here may not change silently. Any change requires editing this file, bumping contractVersion, and a Changeset — enforced by scripts/check-integration-contract.mjs.",
+    "removeOrRenameAStableExport": "major Changeset + contractVersion major",
+    "addAnExport": "minor Changeset + contractVersion minor",
+    "editorialOrMetadataOnly": "patch Changeset + contractVersion patch",
+    "enforcedBy": [
+      "npm run check:integration-contract",
+      "npm run protocol:rc:check",
+      "npm run validate:release"
+    ]
+  }
+}

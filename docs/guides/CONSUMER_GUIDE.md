@@ -19,13 +19,21 @@ invented.
 | Runtime dependencies | None |
 | Registry status | **Not published to any registry.** `"private": true` until a founder-approved publish decision |
 
+> **Binding terms.** What may be depended on, in which install forms, and what a consuming
+> repository owes in return, is frozen in
+> [`docs/integration/CROSS_REPO_INTEGRATION_CONTRACT.md`](../integration/CROSS_REPO_INTEGRATION_CONTRACT.md)
+> and shipped inside the package as `@aoc/protocol/integration-contract.json`. This guide explains
+> how to operate the dependency; the contract governs what the dependency is.
+
 ## Installation today: internal tarball
 
 The only supported distribution mechanism today is a checksummed tarball built by the Protocol
-repository:
+repository. `npm run protocol:rc:artifact` is the recommended entry point — it emits the tarball
+together with a ready-to-vendor `protocol-consumer.lock.json` and `SHA256SUMS` into `dist-rc/`:
 
 ```bash
 # In the Protocol repository:
+npm run protocol:rc:artifact    # → dist-rc/aoc-protocol-<version>.tgz + lock + checksums
 npm run protocol:pack           # → aoc-protocol-<version>.tgz
 
 # In your project:
