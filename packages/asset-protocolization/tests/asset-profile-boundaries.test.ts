@@ -92,7 +92,16 @@ describe('asset protocolization package boundaries', () => {
     const manifest = JSON.parse(readFileSync(join(packageRoot, 'package.json'), 'utf8'));
 
     expect(manifest.name).toBe('@aoc/asset-protocolization');
-    expect(manifest.dependencies).toEqual({ '@aoc/protocol': '0.1.0' });
+    // The envelope is the invariant this test names: exactly one dependency, on Protocol, pinned
+    // exactly rather than by range. The version *literal* is owned by Changesets and moves on every
+    // release cut, so it is read from the workspace instead of frozen here.
+    const protocolVersion = JSON.parse(
+      readFileSync(join(packageRoot, '..', 'protocol', 'package.json'), 'utf8'),
+    ).version;
+
+    expect(Object.keys(manifest.dependencies)).toEqual(['@aoc/protocol']);
+    expect(manifest.dependencies['@aoc/protocol']).toBe(protocolVersion);
+    expect(manifest.dependencies['@aoc/protocol']).toMatch(/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/);
     expect(manifest.devDependencies).toBeUndefined();
     expect(manifest.peerDependencies).toBeUndefined();
   });

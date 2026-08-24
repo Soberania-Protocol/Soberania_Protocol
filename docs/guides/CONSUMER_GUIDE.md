@@ -12,20 +12,29 @@ invented.
 | Field | Value |
 | --- | --- |
 | Name | `@aoc/protocol` |
-| Current version | `0.1.0` (proposed next: `0.2.0` via Changesets — not yet cut) |
+| Current version | `0.2.0-rc.0` (release candidate; cut by Changesets pre mode, tag `rc`. Not published to any registry) |
 | License | Apache-2.0 (relicensed from MIT by PR #319; the tarball ships the official Apache-2.0 `LICENSE` and the `NOTICE` attribution) |
 | Repository | `Architects-of-Change-Protocol/Architects_of_Change_Protocol`, directory `packages/protocol` |
 | Module system | CommonJS (`"type": "commonjs"`), single build |
 | Runtime dependencies | None |
 | Registry status | **Not published to any registry.** `"private": true` until a founder-approved publish decision |
 
+> **Binding terms.** What may be depended on, in which install forms, and what a consuming
+> repository owes in return, is frozen in
+> [`docs/integration/CROSS_REPO_INTEGRATION_CONTRACT.md`](../integration/CROSS_REPO_INTEGRATION_CONTRACT.md)
+> and shipped inside the package as the unexported metadata file `integration-contract.json` (read it
+> by path, not by import). This guide explains how to operate the dependency; the contract governs
+> what the dependency is.
+
 ## Installation today: internal tarball
 
 The only supported distribution mechanism today is a checksummed tarball built by the Protocol
-repository:
+repository. `npm run protocol:rc:artifact` is the recommended entry point — it emits the tarball
+together with a ready-to-vendor `protocol-consumer.lock.json` and `SHA256SUMS` into `dist-rc/`:
 
 ```bash
 # In the Protocol repository:
+npm run protocol:rc:artifact    # → dist-rc/aoc-protocol-<version>.tgz + lock + checksums
 npm run protocol:pack           # → aoc-protocol-<version>.tgz
 
 # In your project:

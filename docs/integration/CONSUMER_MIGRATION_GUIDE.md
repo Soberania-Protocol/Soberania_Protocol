@@ -1,5 +1,10 @@
 # Consumer Migration Guide: Adopting `@aoc/protocol`
 
+> **The integration surface is now frozen.** The binding terms — package identity, the contracted
+> export set, allowed and forbidden install forms, and consumer obligations — live in
+> [`CROSS_REPO_INTEGRATION_CONTRACT.md`](CROSS_REPO_INTEGRATION_CONTRACT.md) and in the machine-readable
+> contract shipped inside the package. Where this guide and that contract differ, the contract governs.
+
 This document explains how Soberanía Enterprise and PMFreak should eventually consume `@aoc/protocol` as a
 versioned package. **No migration is performed by this document or by the sprint that introduced it.**
 Neither `enterprise/` nor any PMFreak repository is modified here.

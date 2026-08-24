@@ -113,6 +113,26 @@ registry.register(AdapterTokens.RevocationLookup, myRevocationLookupImpl, { impl
 See [`docs/protocol/PUBLIC_API.md`](../../docs/protocol/PUBLIC_API.md) for the full symbol-level table
 and stability classification.
 
+The tarball also ships `integration-contract.json` at its root — the frozen cross-repository
+integration contract. It records this package's identity, the complete contracted export set with
+stability classes, the install forms a consumer may use, and what a consumer owes in return, so a
+downstream repository can verify offline that what it installed is what it agreed to depend on.
+
+It is **package metadata, not an export** — the same class as `LICENSE` and `NOTICE`. Read it by
+path from a CI verification step; `@aoc/protocol/integration-contract.json` does not resolve as a
+module specifier, by design:
+
+```js
+const { readFileSync } = require('node:fs');
+const { dirname, join } = require('node:path');
+
+const root = dirname(require.resolve('@aoc/protocol/package.json'));
+const contract = JSON.parse(readFileSync(join(root, 'integration-contract.json'), 'utf8'));
+// contract.contractVersion === '1.0.0', contract.status === 'frozen'
+```
+
+See [`docs/integration/CROSS_REPO_INTEGRATION_CONTRACT.md`](../../docs/integration/CROSS_REPO_INTEGRATION_CONTRACT.md).
+
 Deep imports (`@aoc/protocol/dist/...`, `@aoc/protocol/src/...`, `@aoc/protocol/internal/...`) are not
 supported and are verified to fail to resolve (see `scripts/assert-invalid-imports.mjs`).
 
@@ -127,7 +147,7 @@ supported and are verified to fail to resolve (see `scripts/assert-invalid-impor
   CommonJS named exports (`cjs-module-lexer`) — this is **not** a declared dual-package (there are no
   separate `import`/`require` export conditions), it is CJS interop. See
   [`docs/versioning-and-stability.md`](../../docs/versioning-and-stability.md) for the tested matrix.
-- **Protocol/contract version**: `0.1.0`, pre-1.0. Breaking changes are still possible.
+- **Protocol/contract version**: `0.2.0-rc.0`, pre-1.0 release candidate. Breaking changes are still possible.
 
 ## Stability
 
