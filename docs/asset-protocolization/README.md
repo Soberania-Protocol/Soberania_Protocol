@@ -46,7 +46,7 @@ TOKENIZER               issuance, contracts, custody, marketplace, settlement
 | APV-08 | [`APV_08_PROFESSIONAL_ATTESTATION_WORKFLOW.md`](./APV_08_PROFESSIONAL_ATTESTATION_WORKFLOW.md) | `VERIFIED` — professional attestation workflow in `@aoc/asset-protocolization` |
 | APV-09 | [`APV_09_PROTOCOLIZATION_STATE_MACHINE.md`](./APV_09_PROTOCOLIZATION_STATE_MACHINE.md) | `VERIFIED` — protocolization state machine and readiness evaluation in `@aoc/asset-protocolization` |
 | APV-10 | [`APV_10_PROTOCOLIZATION_EXECUTION.md`](./APV_10_PROTOCOLIZATION_EXECUTION.md) | `VERIFIED` — protocolization execution and `ProtocolizationResult` in `@aoc/asset-protocolization` |
-| **GATE A1** | **Generic Asset Protocolization foundation complete** | **`READY_FOR_REVIEW`** — see below |
+| **GATE A1** | **Generic Asset Protocolization foundation complete** | **`RATIFIED`** — see below |
 | APV-11…APV-20 | not started | — |
 
 The ADR lives under `docs/architecture/` to follow this repository's existing ADR naming
@@ -242,11 +242,17 @@ the second is what stops one case revision being protocolized twice under two di
 No database adapter, migration or schema was added. See
 [`APV_10_PROTOCOLIZATION_EXECUTION.md`](./APV_10_PROTOCOLIZATION_EXECUTION.md#17-persistence).
 
-## Gate A1 — `READY_FOR_REVIEW`
+## Gate A1 — `RATIFIED`
 
 ```text
-GATE A1 = READY_FOR_REVIEW
+GATE A1 = RATIFIED
 ```
+
+Ratified by the Founder / Soberanía Architecture Authority on **2026-08-23**, as the
+precondition for APV-11. This section is the ratification record; APV-03…APV-10 are
+historical and are not rewritten by it.
+
+### What was ratified
 
 APV-10 completes the **generic** Asset Protocolization foundation:
 
@@ -257,13 +263,59 @@ AssetProfile + ProtocolizationCase + Evidence + Declarations + Verification
 ```
 
 Every slice of it is asset-agnostic. No concrete asset profile exists, no production code
-branches on an asset category or a profile id, and the same execution path is exercised for a
+branches on an asset category or a profile id, and the same code path is exercised for a
 subject with a canonical byte representation and a subject named only inside an external
 namespace.
 
-Ratification is a separate act by the Founder / Soberanía Architecture Authority, exactly as
-Gate A0 was. APV-10 does not self-ratify, and `GATE A1 = RATIFIED` is not claimed anywhere.
-APV-11 (`digital.artifact.v1`, the first concrete asset profile) begins only after that act.
+The Gate A0 boundary is carried forward unchanged, and ratification of A1 restates rather
+than relaxes it:
+
+```text
+Protocol                 != Asset Protocolization      still frozen
+Asset Protocolization    != Enterprise Governance      still frozen
+Enterprise Governance    != Tokenizer                  still frozen
+Vertical → substrate contract                          still frozen (APV-02 §2)
+Protocol core modified by APV-03…APV-10                NO
+```
+
+### What ratification does **not** cover
+
+A gate ratifies what was built. It does not convert a deferral into a delivery, and it
+grants no property to any slice that the slice did not establish for itself. In particular:
+
+```text
+GATE A1 RATIFIED  != the APV-02 §2.1 ProtocolizationResultV1 envelope exists
+GATE A1 RATIFIED  != a SovereignManifest is built or signed anywhere
+GATE A1 RATIFIED  != any concrete asset profile is approved
+GATE A1 RATIFIED  != any protocolization has legal effect
+GATE A1 RATIFIED  != Enterprise governance, tokenization or a fee model is authorized
+GATE A1 RATIFIED  != U-3 is discharged
+```
+
+The three open items APV-10 recorded stand exactly as it left them, and each is the
+responsibility of the slice that first genuinely needs it:
+
+- **`ProtocolizationResultV1` (APV-02 §2.1) remains unbuilt.** It requires a registrant and
+  a signing key, and no slice up to APV-10 establishes either. Its proposed contract tests
+  (APV-02 §5, `T-01`…`T-22`) remain unimplemented for the same reason. The vertical-side
+  half of the envelope — `ProtocolizationResult`, schema `aoc-protocolization-execution/1` —
+  exists and is deliberately a different document under a different schema identifier.
+- **Two-write atomicity** (persist the result, dispatch the event) is a composition-layer
+  obligation. `@aoc/asset-protocolization` states the limitation rather than claiming a
+  transaction it does not have.
+- **`U-3` (`CanonicalAssertionId` ownership) remains undischarged.** APV-10 creates no
+  claim, so it needed no assertion identifier. `U-1`, `U-2`, `U-4` and `U-6` stand as
+  recorded under Gate A0 above, with `U-1` and `U-6` discharged once more by APV-10.
+
+### What ratification unblocks
+
+APV-11 — `digital.artifact.v1`, the first **concrete** asset profile — may now begin. It is
+not started, and no concrete asset semantics exist anywhere in the workstream at the time of
+this record.
+
+Later gates are untouched by this one: `GATE A3` (no domain field or enum member in a core
+type) and `GATE A4` (tokenization governance, Workstream B) remain exactly as the ADR and
+APV-00 froze them.
 
 ## Reading order for an implementer
 
