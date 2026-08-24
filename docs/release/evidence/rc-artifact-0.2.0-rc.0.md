@@ -1,75 +1,110 @@
 # RC Artifact Evidence — `@aoc/protocol@0.2.0-rc.0` (P0-PKG-01)
 
 **Status: NOT PUBLISHED.** No `npm publish`, no registry configuration, no git tag, no GitHub
-Release, no `private: false`, no merge. `packages/protocol/package.json` remains `"private": true`.
-This document records the identity of a produced release-candidate artifact; it authorizes nothing.
+Release, no `private: false`, no merge, no auto-merge. `packages/protocol/package.json` remains
+`"private": true`. This document records the identity of a produced release-candidate artifact; it
+authorizes nothing.
 
-## Authorization boundary
-
-The founder authorized:
-
-- prerelease family **`rc`**;
-- candidate identity **`@aoc/protocol@0.2.0-rc.0`**;
-- Changesets computing and applying that identity for **internal RC validation**.
-
-Explicitly not authorized, and not done: npm publication, registry configuration, tag creation,
-GitHub Release, `private: false`, merge.
-
-## Candidate derivation
-
-The version was computed by Changesets, never hand-edited:
-
-```
-npx changeset pre enter rc     # .changeset/pre.json — mode "pre", tag "rc"
-npx changeset version          # 19 accumulated changesets consumed
-```
-
-| Package | Before | After |
-| --- | --- | --- |
-| `@aoc/protocol` | 0.1.0 | **0.2.0-rc.0** (minor + rc) |
-| `@aoc/audit-sdk` | 0.1.0 | 0.1.1-rc.0 |
-| `@aoc/asset-protocolization` | 0.1.0 | 0.1.1-rc.0 |
-| `@aoc/capability-tokens` | 0.1.0 | 0.1.1-rc.0 |
-| `@aoc/consent-engine` | 0.1.0 | 0.1.1-rc.0 |
-| `@aoc/scoped-access` | 0.1.0 | 0.1.1-rc.0 |
-
-**The `0.2.0` minor is legitimately derived from pre-existing accumulated changesets, not from this
-increment.** Verified by removing this increment's changeset and re-running `changeset status`: the
-computed bump is still `minor → 0.2.0`, driven chiefly by `aoc-protocol-public-api-stabilization`
-plus the RFC-005 contract additions, exactly as `RELEASE_CANDIDATE_READINESS.md §1` predicted at
-2026-07-15. This increment contributes a `patch` (packaging and evidence only), which cannot and does
-not raise the computed version. No stop condition was reached.
-
-## Artifact identity
+## Candidate identity — the complete chain
 
 | Field | Value |
 | --- | --- |
+| **RC source commit** | `dde34517d956156a0c735c18a805763a5e712879` |
+| **Final PR HEAD** | the evidence-only commit carrying this file (PR #387 head; a document cannot contain its own hash — verify with `git log -1 --format=%H`) |
 | Package | `@aoc/protocol` |
 | Version | `0.2.0-rc.0` |
-| License | Apache-2.0 (`LICENSE` + `NOTICE` shipped) |
-| Artifact | `aoc-protocol-0.2.0-rc.0.tgz` — 407 files, 278,205 bytes |
+| **Tarball filename** | `aoc-protocol-0.2.0-rc.0.tgz` |
 | **SHA-256** | `dbe8a08f432a0324ad34eb7cb85054b6dcd23c0d9a073914edf23fccd10445e5` |
-| Reproducible | Yes — two consecutive packs are byte-identical |
+| **SHA-512** | `f8cb8dd45bc656a2ab0ba8b01a80d6edad7291addb36088606a9ba4bf547c62333e32c137c6776ea308e25022673ecebabb6f797bfd580a22675132cdba90573` |
+| npm integrity | `sha512-+MuN1FvGVqKrC6iwGoDW7a1yka3bNgiGBqm6S/VHxiMz4ywTfGd26jCOJQImc+zrq7b3l7/VgKImdRMs26kFcw==` |
+| **Size** | 278,205 bytes |
+| **File count** | 407 |
+| **Exports fingerprint** | `a67d65b17dcb34c7da84d9a07cb893e073e21e9edbbc621bcae649afa5cdeb45` (15 export keys) |
+| Public surface digest | `01a28808465fb92f3ed31f465878b3a0ad263f26533fc1cbf860e9ffa1d76e18` |
+| **`protocolWorkspaceClean`** | **`true`** |
+| **Reproducibility** | Two independent packs from `RC_SOURCE_COMMIT` are byte-identical |
+| License | Apache-2.0 (`LICENSE` + `NOTICE` shipped) |
 | Runtime dependencies | none |
 | Integration contract | `aoc.cross-repository-integration@1.0.0`, `frozen`, shipped as unexported metadata |
-| Contracted export paths | 15 — unchanged from `0.1.0` |
 
-Full file list, SHA-512, npm integrity and toolchain versions:
-[`aoc-protocol-0.2.0-rc.0-release-manifest.json`](aoc-protocol-0.2.0-rc.0-release-manifest.json).
-SPDX SBOM: [`aoc-protocol-0.2.0-rc.0.sbom.spdx.json`](aoc-protocol-0.2.0-rc.0.sbom.spdx.json).
+`git show dde34517d956156a0c735c18a805763a5e712879:packages/protocol/package.json` reports
+`"name": "@aoc/protocol"` and `"version": "0.2.0-rc.0"` — the recorded source commit builds the
+recorded artifact.
 
-### Historical evidence is immutable and was not touched
+## Release-integrity correction (this revision)
 
-[`aoc-protocol-0.1.0-release-manifest.json`](aoc-protocol-0.1.0-release-manifest.json) and
-[`aoc-protocol-0.1.0.sbom.spdx.json`](aoc-protocol-0.1.0.sbom.spdx.json) are **byte-identical to
-their state at the pre-candidate commit `2e89f42`** — verified by SHA-256 against the committed
-blobs. Candidate evidence is written under the candidate's own identity, never over a shipped
-version's record. The `0.1.0` artifact Soberanía Enterprise pinned remains exactly what it was.
+The previous revision of this evidence set was **invalid** and is superseded. Its manifest recorded:
 
-## Public surface: unchanged, and measured
+```
+source.gitCommit          = c6f2404ac02f08374c3aa83988725a0257e46899
+protocolWorkspaceClean    = false
+```
 
-`npm run fingerprint:public-surface` produces four independent digests. Measured at the pre-candidate
-commit `2e89f42` and at this candidate:
+`packages/protocol/package.json` at `c6f2404` is still version `0.1.0`, so that commit **cannot**
+produce an `@aoc/protocol@0.2.0-rc.0` tarball. The manifest had been generated from a dirty
+working tree before the candidate was committed, breaking the source → artifact → checksum chain.
+
+The chain is now closed. Every source-identity field in this evidence set points at
+`RC_SOURCE_COMMIT`, and the artifact was regenerated from that commit in a clean room.
+
+**The SHA-256 did not change** — `dbe8a08f…d10445e5` was *independently reproduced* from the clean
+`RC_SOURCE_COMMIT`, confirming the previously published checksum was correct even though the commit
+it was attributed to was not. No candidate-specific reference required updating.
+
+## Clean-room reproduction procedure
+
+Performed in a fresh `git worktree` detached at `RC_SOURCE_COMMIT`, with no uncommitted
+artifact-affecting changes:
+
+| Step | Command | Result |
+| --- | --- | --- |
+| Worktree state | `git status --porcelain` | empty (clean) |
+| Version check | `git show <RC>:packages/protocol/package.json` | `@aoc/protocol` `0.2.0-rc.0` |
+| Clean install | `npm ci` | exit 0, 376 packages |
+| Build | `npm run build` | exit 0 |
+| Complete RC gate | `npm run protocol:rc:check` | **PASS — 22/22** |
+| Independent pack A | `npm pack ./packages/protocol` | `dbe8a08f…d10445e5` |
+| Independent pack B | `npm pack ./packages/protocol` | `dbe8a08f…d10445e5` |
+| Byte-identity | A == B | **identical** |
+| Clean-room consumers | TS/CJS, JS/CJS, TS/ESM, contract-verification | PASS (install, compile, execute) |
+| Candidate artifact | `npm run protocol:rc:artifact` | emitted with `sourceClean: true` |
+| Manifest + SBOM | `npm run protocol:release:manifest` | `gitCommit` = `RC_SOURCE_COMMIT`, `protocolWorkspaceClean: true` |
+| Exports fingerprint | `npm run fingerprint:public-surface` | `exportMap a67d65b1…`, unchanged |
+
+Artifact-affecting inputs, all committed at `RC_SOURCE_COMMIT` before any of the above ran:
+`packages/protocol/package.json`, `packages/protocol/README.md`,
+`packages/protocol/integration-contract.json`, `packages/protocol/LICENSE`,
+`packages/protocol/NOTICE`, `packages/protocol/src/**` (build input), and the packaging scripts
+`scripts/build-rc-artifact.mjs`, `scripts/generate-release-manifest.mjs`,
+`scripts/check-integration-contract.mjs`.
+
+## Evidence set
+
+| File | Source identity |
+| --- | --- |
+| [`aoc-protocol-0.2.0-rc.0-release-manifest.json`](aoc-protocol-0.2.0-rc.0-release-manifest.json) | `gitCommit` = `RC_SOURCE_COMMIT`, `protocolWorkspaceClean: true` |
+| [`aoc-protocol-0.2.0-rc.0.sbom.spdx.json`](aoc-protocol-0.2.0-rc.0.sbom.spdx.json) | SPDX for `@aoc/protocol@0.2.0-rc.0` |
+| [`aoc-protocol-0.2.0-rc.0-consumer.lock.json`](aoc-protocol-0.2.0-rc.0-consumer.lock.json) | `commit` = `RC_SOURCE_COMMIT`, `sourceClean: true` — the lock a consuming repository vendors |
+
+The tarball itself is not committed: its bytes are a pure function of `RC_SOURCE_COMMIT`, so the
+commit plus the SHA-256 above is the record, and any party can reproduce and compare.
+
+## Evidence-only commits after RC_SOURCE_COMMIT
+
+Everything committed after `RC_SOURCE_COMMIT` on this branch is evidence-only. No file that affects
+tarball bytes, package exports, package contents, Protocol implementation, or artifact-generation
+behavior is touched after that commit — see the classified `RC_SOURCE_COMMIT → HEAD` diff recorded
+in PR #387.
+
+## Historical evidence is immutable
+
+`aoc-protocol-0.1.0-release-manifest.json` and `aoc-protocol-0.1.0.sbom.spdx.json` remain
+byte-identical to their state on `main`. Candidate evidence is written under the candidate's own
+identity, never over a shipped version's record.
+
+## Public surface
+
+Measured at the pre-candidate commit `2e89f42` and at this candidate:
 
 | Digest | Before (`0.1.0`) | After (`0.2.0-rc.0`) | Verdict |
 | --- | --- | --- | --- |
@@ -77,51 +112,15 @@ commit `2e89f42` and at this candidate:
 | `exportMap` (15 keys) | `a67d65b17dcb34c7…` | `a67d65b17dcb34c7…` | **unchanged** |
 | `buildOutput` (402 files) | `ac456d52f3b52776…` | `ac456d52f3b52776…` | **unchanged** |
 | `runtimeSymbols` (259 symbols) | `53ce2a00cb697ae6…` | `53ce2a00cb697ae6…` | **unchanged** |
-| `identity` | `5cb73713d11c8df3…` | `337644fee8210b79…` | refreshed (version + `files`) |
+| `identity` | `5cb73713d11c8df3…` | `337644fee8210b79…` | refreshed (version, `files`) |
 
-Read directly:
-
-- **Public export surface: unchanged.** The `exports` map is byte-identical to base — same 15 keys,
-  same targets. The map is now pinned in the contract as `exportMapDigest`, and re-adding the export
-  this increment previously introduced fails the gate three separate ways (negative-tested).
-- **Protocol semantics: unchanged.** Every emitted declaration and JavaScript file under `dist/`
-  hashes identically to base. No source file under `packages/protocol/src` was modified.
-- **Runtime behavior: unchanged.** The exported runtime symbol set, resolved by requiring each
-  declared export from the build output, is identical: 259 symbols across 15 export paths.
-- **Package identity / evidence: refreshed.** Version `0.1.0 → 0.2.0-rc.0`, and `files` now ships
-  `integration-contract.json`. These are the only intended movements, and they are isolated in a
-  digest kept deliberately out of `surfaceDigest`.
-
-## Verification performed
-
-| Check | Result |
-| --- | --- |
-| `npm run protocol:rc:check` | PASS — 22/22 gates |
-| Reproducible double pack | PASS — byte-identical |
-| Tarball contents (`LICENSE`, `NOTICE`, `README.md`, `integration-contract.json`, `dist/`; no `src/`, tests, fixtures, secrets) | PASS |
-| Contract inside the tarball is byte-identical to the tree | PASS |
-| `npm run check:integration-contract` | PASS |
-| Export-surface guard negative test (re-add the export → must fail) | PASS — fails on 3 independent assertions |
-| Consumer fixtures — TypeScript/CJS, JavaScript/CJS, TypeScript/ESM, contract-verification | PASS (install, compile, execute) |
-| All 15 contracted exports resolve from the installed package | PASS |
-| Undeclared subpaths (`/src/…`, `/dist/…`, `/internal`, `/integration-contract.json`) do not resolve | PASS |
-| Historical `0.1.0` evidence unmodified | PASS — SHA-256 match against `2e89f42` blobs |
-
-## How a consumer takes delivery
-
-`npm run protocol:rc:artifact` writes, into the git-ignored `dist-rc/`:
-`aoc-protocol-0.2.0-rc.0.tgz`, a ready-to-vendor `protocol-consumer.lock.json`, `SHA256SUMS`, and the
-install/verify procedure. The artifact is not committed — the bytes are a pure function of the
-commit, so the commit plus the SHA-256 above is the record.
-
-Consumer obligations and the PMFreak migration are specified in
-[`../../integration/CROSS_REPO_INTEGRATION_CONTRACT.md`](../../integration/CROSS_REPO_INTEGRATION_CONTRACT.md).
+Public export surface, Protocol semantics and runtime behavior are unchanged; only package identity
+and evidence moved.
 
 ## What this does not evidence
 
-- No registry publication, dist-tag, tag, GitHub Release, `private: false`, or merge.
+- No registry publication, dist-tag, tag, GitHub Release, `private: false`, merge, or auto-merge.
 - No PMFreak-side or Soberanía Enterprise-side change. Neither repository was modified, and the
-  `@aoc-enterprise/runtime` vs `@aoc/enterprise` question is deliberately left open for the
-  Enterprise increment.
+  `@aoc-enterprise/runtime` vs `@aoc/enterprise` question stays open for the Enterprise increment.
 - Not the three-repository packaging proof. The Protocol third is complete; the Enterprise third is
   unevidenced here by design.

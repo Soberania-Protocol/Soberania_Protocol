@@ -163,8 +163,10 @@ GitHub Release, `private: false`, merge. `private: true` still holds.
 - **The candidate is emitted, not just provable.** `npm run protocol:rc:artifact` writes a
   reproducible `aoc-protocol-0.2.0-rc.0.tgz` plus a ready-to-vendor `protocol-consumer.lock.json`,
   `SHA256SUMS` and install/verify instructions into the git-ignored `dist-rc/`. Identity: SHA-256
-  `dbe8a08f432a0324ad34eb7cb85054b6dcd23c0d9a073914edf23fccd10445e5`, 407 files. Full evidence:
-  [`evidence/rc-artifact-0.2.0-rc.0.md`](evidence/rc-artifact-0.2.0-rc.0.md).
+  `dbe8a08f432a0324ad34eb7cb85054b6dcd23c0d9a073914edf23fccd10445e5`, 407 files, 278,205 bytes,
+  built from RC source commit `dde34517d956156a0c735c18a805763a5e712879` with
+  `protocolWorkspaceClean: true` — reproduced independently in a clean `npm ci` worktree detached at
+  that commit. Full evidence: [`evidence/rc-artifact-0.2.0-rc.0.md`](evidence/rc-artifact-0.2.0-rc.0.md).
 - **Historical evidence is immutable.** The `0.1.0` manifest and SBOM are byte-identical to their
   state at `2e89f42`; candidate evidence is written under the candidate's own identity. The artifact
   Soberanía Enterprise pinned is untouched.
