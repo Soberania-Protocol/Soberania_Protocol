@@ -38,39 +38,10 @@ check('tests', () => run('npm test'));
 check('public API governance', () => run('npm run check:public-export-governance'));
 check('symbol parity', () => run('npm run check:symbol-parity'));
 check('version graph', () => run('npm run check:version-graph'));
-check('Changeset status', () => {
-  const prePath = join(repo, '.changeset/pre.json');
-  const pre = existsSync(prePath) ? JSON.parse(readFileSync(prePath, 'utf8')) : null;
-
-  if (!pre || pre.mode !== 'pre') {
-    run('npx changeset status');
-    return;
-  }
-
-  // Prerelease mode. `changeset version` consumes every accumulated changeset and records it in
-  // pre.json, so `changeset status` afterwards legitimately reports "no changesets were found" —
-  // that is what a cut candidate looks like, not a governance failure. It is tolerated ONLY when
-  // the cut is coherent, so that is asserted first and nothing else is forgiven.
-  const pkgVersion = JSON.parse(readFileSync(join(repo, 'packages/protocol/package.json'), 'utf8')).version;
-  if (!pre.tag) throw new Error('.changeset/pre.json is in pre mode but records no tag');
-  if (!(pre.changesets ?? []).length) {
-    throw new Error(`pre mode is active with tag "${pre.tag}" but no changesets have been consumed — run: npx changeset version`);
-  }
-  if (!new RegExp(`-${pre.tag}\\.\\d+$`).test(pkgVersion)) {
-    throw new Error(`@aoc/protocol@${pkgVersion} does not carry the active prerelease tag "${pre.tag}"`);
-  }
-
-  try {
-    execSync('npx changeset status', { cwd: repo, stdio: 'pipe', encoding: 'utf8' });
-  } catch (error) {
-    const output = `${error.stdout ?? ''}${error.stderr ?? ''}`;
-    if (!/no changesets were found/i.test(output)) throw error;
-    console.log(
-      `  pre mode "${pre.tag}": ${pre.changesets.length} changesets consumed into ${pkgVersion}; ` +
-        'no pending changesets is the expected post-cut state',
-    );
-  }
-});
+// Prerelease-aware: outside pre mode this is exactly `changeset status`; inside it, the
+// post-cut "no changesets" state is accepted only when the cut itself is coherent.
+// One implementation of that rule, shared with `npm run release:status`.
+check('Changeset status', () => run('node scripts/changeset-status.mjs'));
 // The frozen cross-repository integration contract must still describe the package it ships in.
 check('integration contract', () => run('npm run check:integration-contract'));
 
