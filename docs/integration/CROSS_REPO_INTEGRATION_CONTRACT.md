@@ -1,13 +1,24 @@
 # Cross-Repository Integration Contract
 
 **Status: FROZEN.** Contract `aoc.cross-repository-integration@1.0.0`, frozen 2026-08-24 by
-P0-PKG-01.
+P0-PKG-01, against candidate `@aoc/protocol@0.2.0-rc.0`.
+
+**Authorization boundary.** The founder authorized the `rc` prerelease family and the candidate
+identity `0.2.0-rc.0` for internal RC validation. That authorization explicitly does **not** extend
+to npm publication, registry configuration, tag creation, a GitHub Release, flipping `private:false`,
+or merging. None of those has been done.
 
 This document is the normative prose for the machine-readable contract at
 [`packages/protocol/integration-contract.json`](../../packages/protocol/integration-contract.json),
-which ships **inside** the `@aoc/protocol` tarball. A consumer can therefore read the contract out
-of `node_modules/@aoc/protocol/integration-contract.json` and check, offline, that what it installed
-is the surface it agreed to depend on.
+which ships **inside** the `@aoc/protocol` tarball as unexported package metadata — the same class as
+`LICENSE` and `NOTICE`. A consumer reads it out of
+`node_modules/@aoc/protocol/integration-contract.json` **by path** and checks, offline, that what it
+installed is the surface it agreed to depend on.
+
+It is deliberately not a module export: `@aoc/protocol/integration-contract.json` does not resolve,
+and a consumer fixture asserts that it does not. Shipping the contract must not itself widen the
+public API it describes. Promoting it to a declared export would need its own approved public-API
+decision and a `minor` Changeset.
 
 It authorizes nothing. No registry publication, no version cut, no `private: false` flip, and no
 deployment follows from this document — those remain founder decisions governed by
@@ -59,7 +70,8 @@ Identity, as frozen in the contract file and re-asserted on every build against
 | Field | Value |
 | --- | --- |
 | Package | `@aoc/protocol` |
-| Version | `0.1.0` (pre-1.0; `private: true` — no registry publication has occurred) |
+| Version | `0.2.0-rc.0` (release candidate, pre-1.0; `private: true` — no registry publication has occurred) |
+| Candidate derivation | Changesets pre mode, tag `rc` (`.changeset/pre.json`). The `0.2.0` minor comes from pre-existing accumulated changesets — chiefly `aoc-protocol-public-api-stabilization` — not from this increment, which contributes a `patch` |
 | License | Apache-2.0 (`LICENSE` + `NOTICE` ship in the tarball) |
 | Node | `>=20` |
 | Module format | CommonJS. ESM consumers work through Node's CommonJS named-export analysis; this is **not** a dual package |
@@ -68,7 +80,9 @@ Identity, as frozen in the contract file and re-asserted on every build against
 
 ### The contracted export set
 
-These sixteen keys are the entire supported surface. Nothing else in the installed package may be
+These fifteen keys are the entire supported surface, unchanged from the previous release —
+`@aoc/protocol`'s export map is byte-identical to the pre-candidate commit, and
+`npm run fingerprint:public-surface` reports the same `surfaceDigest` across the two. Nothing else in the installed package may be
 imported, including anything that happens to resolve.
 
 | Export | Stability | Kind |
@@ -88,7 +102,6 @@ imported, including anything that happens to resolve.
 | `@aoc/protocol/governance-compatibility` | stable | mixed |
 | `@aoc/protocol/sovereignty-capabilities` | stable | mixed |
 | `@aoc/protocol/package.json` | metadata | json |
-| `@aoc/protocol/integration-contract.json` | metadata | json |
 
 Stability classes carry the meanings defined in
 [`../versioning-and-stability.md`](../versioning-and-stability.md); the symbol-level table is
@@ -96,8 +109,9 @@ Stability classes carry the meanings defined in
 contracted code export is missing from that table, so the two cannot disagree.
 
 **Forbidden import forms** — `@aoc/protocol/src/*`, `@aoc/protocol/dist/*`,
-`@aoc/protocol/internal/*`, and any path that is not a declared export key. These are verified
-non-resolving by `scripts/assert-invalid-imports.mjs`.
+`@aoc/protocol/internal/*`, `@aoc/protocol/integration-contract.json`, and any other path that is
+not a declared export key. These are verified non-resolving by
+`scripts/assert-invalid-imports.mjs` and by the `contract-verification` consumer fixture.
 
 ## How the artifact is obtained
 
@@ -109,7 +123,7 @@ writes, into the git-ignored `dist-rc/`:
 
 | File | What it is |
 | --- | --- |
-| `aoc-protocol-<version>.tgz` | the installable release candidate |
+| `aoc-protocol-0.2.0-rc.0.tgz` | the installable release candidate |
 | `protocol-consumer.lock.json` | the lock a consuming repository vendors: repository, commit, version, SHA-256/SHA-512, npm integrity, file count, contract version, verified export list |
 | `SHA256SUMS` | the checksum line, for a one-command `sha256sum -c` |
 | `README.md` | the artifact's identity and the consumer install/verify procedure |
@@ -151,7 +165,8 @@ Every consuming repository must:
 1. **Install the packed artifact**, never a path into a source tree.
 2. **Vendor a lock file** recording repository, commit, version and SHA-256 of what it installed —
    `dist-rc/protocol-consumer.lock.json` is generated ready to copy.
-3. **Verify the shipped contract**: read `node_modules/@aoc/protocol/integration-contract.json` and
+3. **Verify the shipped contract**: read the file at
+   `node_modules/@aoc/protocol/integration-contract.json` (by path — it is not importable) and
    assert its `contractVersion` is the one the consumer was built against.
 4. **Import only through declared export keys.**
 5. **Run a blocking CI job** that reinstalls the pinned artifact, re-checks the checksum against the
@@ -163,15 +178,15 @@ Enterprise's `protocol-tarball-consumption` job is the working reference impleme
 
 | From | To |
 | --- | --- |
-| `"@aoc/protocol": "file:src/aoc/protocol"` | `"@aoc/protocol": "file:./vendor/aoc-protocol-0.1.0.tgz"` (then an exact registry version once publication is authorized) |
+| `"@aoc/protocol": "file:src/aoc/protocol"` | `"@aoc/protocol": "file:./vendor/aoc-protocol-0.2.0-rc.0.tgz"` (then an exact registry version once publication is authorized) |
 | `"@aoc-enterprise/runtime": "file:src/aoc/enterprise"` | the packaged form Soberanía Enterprise distributes — blocked on the unresolved item below |
 | `src/aoc/protocol/**` source copy | deleted; the package is the only source of those shapes |
 
 Migration steps, PMFreak-side:
 
-1. `npm run protocol:rc:artifact` in this repository; copy `dist-rc/aoc-protocol-<version>.tgz` into
-   PMFreak's `vendor/` and `dist-rc/protocol-consumer.lock.json` into PMFreak's root.
-2. `npm install --save-exact file:./vendor/aoc-protocol-<version>.tgz`.
+1. `npm run protocol:rc:artifact` in this repository; copy `dist-rc/aoc-protocol-0.2.0-rc.0.tgz`
+   into PMFreak's `vendor/` and `dist-rc/protocol-consumer.lock.json` into PMFreak's root.
+2. `npm install --save-exact file:./vendor/aoc-protocol-0.2.0-rc.0.tgz`.
 3. Delete `src/aoc/protocol` and any shim, ambient declaration or `paths` alias that pointed at it.
 4. Re-point imports at declared export keys only; `tsc --traceResolution` must resolve every
    `@aoc/protocol` import into `node_modules/@aoc/protocol/dist/...`.

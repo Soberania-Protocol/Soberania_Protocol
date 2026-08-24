@@ -7,6 +7,7 @@
  *
  * See docs/integration/CROSS_REPO_INTEGRATION_CONTRACT.md.
  */
+import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
@@ -49,9 +50,34 @@ describe('cross-repository integration contract', () => {
     }
   });
 
-  it('ships to consumers — listed in "files" and reachable as an export', () => {
+  it('ships as packaged metadata and does not widen the public export surface', () => {
     expect(protocolPackage.files).toContain('integration-contract.json');
-    expect(protocolPackage.exports['./integration-contract.json']).toBe('./integration-contract.json');
+    // P0-PKG-01 requires the export surface to be unchanged: the contract travels the way LICENSE
+    // and NOTICE do, read by path, never imported.
+    expect(protocolPackage.exports['./integration-contract.json']).toBeUndefined();
+    expect(contract.protocol.contractFile.isAPublicExport).toBe(false);
+  });
+
+  it('pins the export map by digest, and the digest still matches', () => {
+    const digest = createHash('sha256')
+      .update(
+        JSON.stringify(
+          Object.keys(protocolPackage.exports)
+            .sort()
+            .map((key) => [key, protocolPackage.exports[key]]),
+        ),
+      )
+      .digest('hex');
+    expect(contract.protocol.exportMapDigest).toBe(digest);
+  });
+
+  it('carries the founder-authorized candidate identity', () => {
+    expect(contract.protocol.version).toBe('0.2.0-rc.0');
+    expect(contract.protocol.distribution.prereleaseFamily).toBe('rc');
+    expect(contract.protocol.distribution.candidateIdentity).toBe('0.2.0-rc.0');
+    // Authorization covers the candidate identity only — not publication.
+    expect(protocolPackage.private).toBe(true);
+    expect(contract.protocol.distribution.registryPublication).toMatch(/not performed/i);
   });
 
   it('forbids the install forms that would defeat independent packaging', () => {

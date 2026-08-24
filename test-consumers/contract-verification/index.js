@@ -8,8 +8,15 @@
 // If this fails, a consumer that trusted the contract would have been misled — which is the whole
 // thing the freeze exists to prevent.
 
-const contract = require('@aoc/protocol/integration-contract.json');
+const { readFileSync } = require('node:fs');
+const { dirname, join } = require('node:path');
+
 const installed = require('@aoc/protocol/package.json');
+// The contract ships as unexported package metadata (like LICENSE and NOTICE), so it is read by
+// path — exactly as a consumer's CI verification step would. It is deliberately NOT a module
+// specifier: this increment does not widen @aoc/protocol's public export surface.
+const packageRoot = dirname(require.resolve('@aoc/protocol/package.json'));
+const contract = JSON.parse(readFileSync(join(packageRoot, 'integration-contract.json'), 'utf8'));
 
 const assert = (condition, message) => {
   if (!condition) throw new Error(message);
@@ -50,9 +57,20 @@ assert(
   resolved.length === Object.keys(installed.exports).length,
   `contract covers ${resolved.length} exports but the installed package declares ${Object.keys(installed.exports).length}`,
 );
+assert(
+  contract.protocol.contractFile.isAPublicExport === false && installed.exports['./integration-contract.json'] === undefined,
+  'the contract must ship as unexported metadata — the installed package must not declare it as an export',
+);
 
 // --- nothing outside the contract may be imported ---
-for (const forbidden of ['@aoc/protocol/src/contracts', '@aoc/protocol/dist/contracts/index.js', '@aoc/protocol/internal']) {
+for (const forbidden of [
+  '@aoc/protocol/src/contracts',
+  '@aoc/protocol/dist/contracts/index.js',
+  '@aoc/protocol/internal',
+  // The contract file itself must not be reachable as a module specifier — proving this
+  // increment shipped it without widening the export surface.
+  '@aoc/protocol/integration-contract.json',
+]) {
   let reachable = false;
   try {
     require(forbidden);
@@ -72,5 +90,6 @@ assert(
 
 console.log(
   `consumer OK — ${contract.contract}@${contract.contractVersion} (${contract.status}) verified against ` +
-    `${installed.name}@${installed.version}: ${resolved.length} contracted exports resolved, 3 forbidden forms rejected`,
+    `${installed.name}@${installed.version}: ${resolved.length} contracted exports resolved, 4 forbidden forms rejected, ` +
+    'contract read as unexported metadata',
 );

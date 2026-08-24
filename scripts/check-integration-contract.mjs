@@ -10,15 +10,19 @@
 //   1. the contract document itself is well-formed and marked frozen;
 //   2. package identity (name, version, license, engines, module format, zero runtime deps)
 //      matches packages/protocol/package.json exactly;
-//   3. the declared export set is *exactly* the package's export key set — adding or removing an
-//      export without editing the contract fails here;
+//   3. the declared export set is *exactly* the package's export key set, and the export map still
+//      hashes to the digest the contract pins — adding, removing or repointing an export without
+//      deliberately editing the contract fails here;
 //   4. every declared export resolves to a built artifact under packages/protocol/dist
 //      (or to a real file, for the JSON metadata exports);
 //   5. every code export is classified in docs/protocol/PUBLIC_API.md, so the contract and the
 //      governed public-API table cannot disagree;
-//   6. the contract file is actually shipped (listed in "files" and in "exports").
+//   6. the contract file is actually shipped (listed in "files") and is deliberately NOT a
+//      declared export — P0-PKG-01 requires the public export surface to be unchanged, so the
+//      contract travels as unexported package metadata, the same class as LICENSE and NOTICE.
 //
 // It never publishes, packs, tags, or contacts a registry.
+import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
@@ -143,6 +147,21 @@ if (missingFromPackage.length) {
   );
 }
 
+// The export map itself is pinned by digest. Implementation is deliberately NOT pinned — the
+// build-output digest would fail every ordinary source change — but the set of export keys and the
+// files they resolve to cannot move without someone deliberately updating this value.
+const exportMapDigest = createHash('sha256')
+  .update(JSON.stringify(packagePaths.slice().sort().map((key) => [key, pkg.exports[key]])))
+  .digest('hex');
+if (protocol.exportMapDigest !== exportMapDigest) {
+  fail(
+    `the export map digest is ${exportMapDigest} but the frozen contract pins ` +
+      `${protocol.exportMapDigest}. The public export surface moved. If that is intended, update ` +
+      'protocol.exportMapDigest, bump contractVersion, and add a Changeset classified for the change ' +
+      '(see docs/protocol/PUBLIC_API.md governance policy). Recompute with: npm run fingerprint:public-surface',
+  );
+}
+
 const allowedStability = new Set(['stable', 'stable-expanding', 'experimental', 'metadata']);
 const allowedKind = new Set(['type-only', 'runtime', 'mixed', 'json']);
 for (const entry of contractExports) {
@@ -183,7 +202,7 @@ if (!publicApi) {
   fail(`missing ${publicApiPath} — the contract cannot be reconciled against the governed public API table`);
 } else {
   for (const entry of contractExports) {
-    if (entry.kind === 'json') continue;
+    if (entry.kind === 'json') continue; // ./package.json is npm-defined metadata, not a governed code export
     const specifier = entry.path === '.' ? '@aoc/protocol' : `@aoc/protocol/${entry.path.slice(2)}`;
     if (!publicApi.includes(`\`${specifier}\``)) {
       fail(`export ${entry.path} is contracted but absent from docs/protocol/PUBLIC_API.md`);
@@ -191,12 +210,22 @@ if (!publicApi) {
   }
 }
 
-// --- 6. the contract is actually shipped to consumers ---
+// --- 6. the contract ships as metadata, and does NOT widen the public export surface ---
 if (!(pkg.files ?? []).includes('integration-contract.json')) {
   fail('packages/protocol/package.json "files" must include "integration-contract.json" so the contract ships inside the tarball');
 }
-if (pkg.exports?.['./integration-contract.json'] !== './integration-contract.json') {
-  fail('packages/protocol/package.json must export "./integration-contract.json" so consumers can read the contract from the installed package');
+if (pkg.exports?.['./integration-contract.json'] !== undefined) {
+  fail(
+    'packages/protocol/package.json declares "./integration-contract.json" as an export. The contract must ship as unexported ' +
+      'metadata (read by path, like LICENSE and NOTICE): promoting it to an export is an additive public-API change that needs ' +
+      'its own approved public-API decision and a minor Changeset, not a side effect of packaging work.',
+  );
+}
+if (contract.protocol?.contractFile?.isAPublicExport !== false) {
+  fail('protocol.contractFile.isAPublicExport must be false — the contract records how it travels, and it does not travel as an export');
+}
+if (!contract.protocol?.contractFile?.packagedAs) {
+  fail('protocol.contractFile.packagedAs must say where the contract sits inside the tarball');
 }
 
 // --- 7. the unresolved-item discipline ---

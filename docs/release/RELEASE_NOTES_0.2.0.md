@@ -2,6 +2,12 @@
 
 **Status: Draft — not published.**
 
+> **Candidate cut (2026-08-24).** `@aoc/protocol@0.2.0-rc.0` exists as an internal release
+> candidate: Changesets pre mode, tag `rc`, founder-authorized for RC validation only. It is not
+> published to any registry, not tagged, and carries no GitHub Release. Artifact identity:
+> [`evidence/rc-artifact-0.2.0-rc.0.md`](evidence/rc-artifact-0.2.0-rc.0.md). These notes stay a
+> draft until `0.2.0` itself is authorized.
+
 `0.2.0` is the *proposed* next version, computed by Changesets from pending changesets
 (`npx changeset status --verbose`). It has not been cut (`changeset version` has not run), not
 packed under that number, not tagged, and not published to any registry. These notes are prepared

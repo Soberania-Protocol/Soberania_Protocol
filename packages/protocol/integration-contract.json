@@ -12,7 +12,7 @@
     "packageRepositoryUrl": "git+https://github.com/Architects-of-Change-Protocol/Architects_of_Change_Protocol.git",
     "packageRepositoryUrlNote": "packages/protocol/package.json still declares the pre-rebrand slug, as does the rest of this repository (frontend, docs, and tests assert it). The git remote this contract was frozen from is Soberania-Protocol/Soberania_Protocol. Both identifiers are recorded rather than reconciled: whether they are one renamed repository is a GitHub-side fact this repository does not evidence, and consumers follow the URL in the package metadata.",
     "package": "@aoc/protocol",
-    "version": "0.1.0",
+    "version": "0.2.0-rc.0",
     "license": "Apache-2.0",
     "private": true,
     "engines": { "node": ">=20" },
@@ -21,12 +21,17 @@
     "runtimeDependencies": {},
     "distribution": {
       "state": "internal-tarball",
-      "artifactName": "aoc-protocol-<version>.tgz",
+      "prereleaseFamily": "rc",
+      "candidateIdentity": "0.2.0-rc.0",
+      "candidateIdentityDerivedBy": "Changesets pre mode (tag rc) — .changeset/pre.json; the 0.2.0 minor is derived from pre-existing accumulated changesets, not from this increment, which contributes a patch",
+      "artifactName": "aoc-protocol-0.2.0-rc.0.tgz",
       "producedBy": "npm run protocol:rc:artifact",
       "reproducible": true,
       "integrityRecordedIn": "dist-rc/protocol-consumer.lock.json and docs/release/evidence/",
       "registryPublication": "not performed — founder-gated (docs/release/RELEASE_AUTHORITY.md, docs/release/PRERELEASE_POLICY.md)"
     },
+    "exportMapDigest": "a67d65b17dcb34c7da84d9a07cb893e073e21e9edbbc621bcae649afa5cdeb45",
+    "exportMapDigestNote": "sha256 of the canonically ordered `exports` object, as computed by scripts/fingerprint-public-surface.mjs. It pins the export surface itself: implementation may evolve freely (the build-output digest is deliberately NOT frozen), but the set of export keys and the files they point at cannot move without deliberately updating this value, and that update requires a Changeset. This digest is unchanged from the pre-candidate commit 2e89f42.",
     "exports": [
       { "path": ".", "stability": "stable", "kind": "type-only" },
       { "path": "./contracts", "stability": "stable", "kind": "type-only" },
@@ -42,9 +47,14 @@
       { "path": "./licensing", "stability": "stable", "kind": "mixed" },
       { "path": "./governance-compatibility", "stability": "stable", "kind": "mixed" },
       { "path": "./sovereignty-capabilities", "stability": "stable", "kind": "mixed" },
-      { "path": "./package.json", "stability": "metadata", "kind": "json" },
-      { "path": "./integration-contract.json", "stability": "metadata", "kind": "json" }
+      { "path": "./package.json", "stability": "metadata", "kind": "json" }
     ],
+    "contractFile": {
+      "packagedAs": "integration-contract.json at the root of the tarball",
+      "isAPublicExport": false,
+      "rationale": "P0-PKG-01 requires the public export surface to be unchanged by this increment, so the contract ships as an unexported metadata file — the same class as LICENSE and NOTICE — and is read by path (node_modules/@aoc/protocol/integration-contract.json), not by module specifier. Promoting it to a declared export would be an additive public-API change requiring its own approved public-API decision and a minor Changeset.",
+      "readBy": "consumer CI verification, not application code"
+    },
     "forbiddenImportForms": [
       "@aoc/protocol/src/*",
       "@aoc/protocol/dist/*",

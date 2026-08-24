@@ -2,22 +2,22 @@
   "spdxVersion": "SPDX-2.3",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "name": "@aoc/protocol@0.1.0",
-  "documentNamespace": "http://spdx.org/spdxdocs/@aoc%2fprotocol-0.1.0-d2923f1e-5bcb-41dc-a76b-1a4e721a914f",
+  "name": "@aoc/protocol@0.2.0-rc.0",
+  "documentNamespace": "http://spdx.org/spdxdocs/@aoc%2fprotocol-0.2.0-rc.0-85c9a1bb-cde6-4557-a834-0cea74bf3451",
   "creationInfo": {
-    "created": "2026-08-19T03:57:47.704Z",
+    "created": "2026-08-24T02:35:23.571Z",
     "creators": [
       "Tool: npm/cli-10.9.7"
     ]
   },
   "documentDescribes": [
-    "SPDXRef-Package-aoc.protocol-0.1.0"
+    "SPDXRef-Package-aoc.protocol-0.2.0-rc.0"
   ],
   "packages": [
     {
       "name": "@aoc/protocol",
-      "SPDXID": "SPDXRef-Package-aoc.protocol-0.1.0",
-      "versionInfo": "0.1.0",
+      "SPDXID": "SPDXRef-Package-aoc.protocol-0.2.0-rc.0",
+      "versionInfo": "0.2.0-rc.0",
       "packageFileName": "",
       "description": "Public contracts, semantics, schemas, and compatibility definitions for Soberanía Protocol.",
       "primaryPackagePurpose": "LIBRARY",
@@ -29,7 +29,7 @@
         {
           "referenceCategory": "PACKAGE-MANAGER",
           "referenceType": "purl",
-          "referenceLocator": "pkg:npm/%40aoc/protocol@0.1.0"
+          "referenceLocator": "pkg:npm/%40aoc/protocol@0.2.0-rc.0"
         }
       ]
     }
@@ -37,7 +37,7 @@
   "relationships": [
     {
       "spdxElementId": "SPDXRef-DOCUMENT",
-      "relatedSpdxElement": "SPDXRef-Package-aoc.protocol-0.1.0",
+      "relatedSpdxElement": "SPDXRef-Package-aoc.protocol-0.2.0-rc.0",
       "relationshipType": "DESCRIBES"
     }
   ]

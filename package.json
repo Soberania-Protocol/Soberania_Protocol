@@ -29,6 +29,7 @@
     "protocol:rc:check": "node scripts/validate-release-candidate.mjs",
     "protocol:rc:artifact": "node scripts/build-rc-artifact.mjs",
     "check:integration-contract": "node scripts/check-integration-contract.mjs",
+    "fingerprint:public-surface": "node scripts/fingerprint-public-surface.mjs",
     "lint:semantic-ownership": "node scripts/lint-semantic-ownership.mjs",
     "check:runtime-boundaries": "node scripts/check-runtime-boundaries.mjs",
     "check:revocation-safety": "node scripts/check-revocation-fail-closed.mjs",

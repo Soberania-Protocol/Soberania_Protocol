@@ -148,30 +148,43 @@ a rollback plan ([`ROLLBACK_PLAN.md`](ROLLBACK_PLAN.md)), known limitations
 `.github/workflows/rc-validation.yml`). Changeset-version, publish, and security dry-run evidence:
 [`evidence/rc-dry-run-2026-07-15.md`](evidence/rc-dry-run-2026-07-15.md).
 
-## 7. P0-PKG-01 — installable RC artifact and the frozen integration contract (2026-08-24)
+## 7. P0-PKG-01 — candidate `0.2.0-rc.0`, installable artifact, and the frozen integration contract (2026-08-24)
 
-Added after the sprint above, against the current tree. Status is unchanged: **NOT PUBLISHED**,
-`private: true`, no registry, no tag, no version cut.
+**Founder authorization on record:** prerelease family `rc`; candidate identity
+`@aoc/protocol@0.2.0-rc.0`; Changesets authorized to compute and apply that identity for internal RC
+validation. **Not authorized, and not done:** npm publication, registry configuration, tag creation,
+GitHub Release, `private: false`, merge. `private: true` still holds.
 
-What changed:
-
-- **The candidate is now emitted, not just provable.** `npm run protocol:rc:artifact` writes a
-  reproducible `aoc-protocol-<version>.tgz` plus a ready-to-vendor `protocol-consumer.lock.json`,
-  `SHA256SUMS` and install/verify instructions into the git-ignored `dist-rc/`. Current artifact
-  identity: SHA-256 `a404ba9c84be4f8b63a259fe6643e98c409ee060a4ec1396c344ce0b22ec97c3` — see
-  [`evidence/rc-artifact-2026-08-24.md`](evidence/rc-artifact-2026-08-24.md), which also records why
-  it supersedes `2485edd0…6556`.
-- **The integration surface is frozen and shipped.** `packages/protocol/integration-contract.json`
-  (`aoc.cross-repository-integration@1.0.0`) travels inside the tarball, so a consumer verifies
-  offline what it installed. Normative prose:
+- **The candidate identity is cut, by Changesets.** `changeset pre enter rc` + `changeset version`
+  consumed 19 accumulated changesets and produced `@aoc/protocol@0.2.0-rc.0` (dependants at
+  `0.1.1-rc.0`). The `0.2.0` minor derives from pre-existing changesets — re-verified by removing
+  this increment's changeset, which is a `patch`, and confirming the computed bump is still
+  `minor → 0.2.0`. This is the version §1 of this report predicted on 2026-07-15.
+- **The candidate is emitted, not just provable.** `npm run protocol:rc:artifact` writes a
+  reproducible `aoc-protocol-0.2.0-rc.0.tgz` plus a ready-to-vendor `protocol-consumer.lock.json`,
+  `SHA256SUMS` and install/verify instructions into the git-ignored `dist-rc/`. Identity: SHA-256
+  `dbe8a08f432a0324ad34eb7cb85054b6dcd23c0d9a073914edf23fccd10445e5`, 407 files. Full evidence:
+  [`evidence/rc-artifact-0.2.0-rc.0.md`](evidence/rc-artifact-0.2.0-rc.0.md).
+- **Historical evidence is immutable.** The `0.1.0` manifest and SBOM are byte-identical to their
+  state at `2e89f42`; candidate evidence is written under the candidate's own identity. The artifact
+  Soberanía Enterprise pinned is untouched.
+- **The public export surface did not move, and this is measured, not asserted.**
+  `npm run fingerprint:public-surface` reports the same `surfaceDigest`
+  (`01a28808465fb92f…`) before and after: identical export map (15 keys), identical build output
+  (402 files), identical runtime symbol set (259 symbols). Only the identity digest moved — version
+  and `files`. The export map is now pinned in the contract as `exportMapDigest`.
+- **The integration surface is frozen and shipped without widening the API.**
+  `packages/protocol/integration-contract.json` (`aoc.cross-repository-integration@1.0.0`) travels
+  inside the tarball as unexported metadata — the same class as `LICENSE` and `NOTICE`, read by path.
+  `@aoc/protocol/integration-contract.json` deliberately does not resolve. Normative prose:
   [`../integration/CROSS_REPO_INTEGRATION_CONTRACT.md`](../integration/CROSS_REPO_INTEGRATION_CONTRACT.md).
 - **The freeze is enforced.** `npm run check:integration-contract` fails on any drift between the
-  contract, `packages/protocol/package.json` and `docs/protocol/PUBLIC_API.md`; it runs inside
-  `protocol:rc:check`, `protocol:release:check` and `validate:release`. A fourth consumer fixture
-  verifies the contract from a real install and asserts undeclared subpaths still do not resolve.
+  contract, `packages/protocol/package.json` and `docs/protocol/PUBLIC_API.md`, and on any change to
+  the export-map digest; it runs inside `protocol:rc:check`, `protocol:release:check` and
+  `validate:release`. Negative-tested: re-introducing the export fails three independent assertions.
 
-What remains open, and is not closed by this sprint: every founder decision in the approval gate
-below, and the Enterprise runtime identifier. PMFreak declares `@aoc-enterprise/runtime`; this
-repository does not build, own or publish an artifact under that name, and holds no evidence that
-Soberanía Enterprise does. Until that is settled Enterprise-side, the three-repository packaging
-proof cannot close — the Protocol third of it is complete.
+Still open, and not closed here: every founder decision in §5 other than the two recorded above, and
+the Enterprise runtime identifier. PMFreak declares `@aoc-enterprise/runtime`; this repository does
+not build, own or publish an artifact under that name, and holds no evidence that Soberanía
+Enterprise does. That is deliberately left for the Enterprise increment — until it is settled, the
+three-repository packaging proof cannot close, and the Protocol third of it is what is delivered here.
