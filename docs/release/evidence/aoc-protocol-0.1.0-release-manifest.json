@@ -23,13 +23,14 @@
       "./licensing",
       "./governance-compatibility",
       "./sovereignty-capabilities",
-      "./package.json"
+      "./package.json",
+      "./integration-contract.json"
     ],
     "runtimeDependencies": {}
   },
   "source": {
     "repository": "git+https://github.com/Architects-of-Change-Protocol/Architects_of_Change_Protocol.git",
-    "gitCommit": "d91b48376abaef0b667f7f73a13cc25795b6fc8a",
+    "gitCommit": "1b26d97b5b48a7fbd81847a29df0cda8c3b5d6d1",
     "protocolWorkspaceClean": true
   },
   "toolchain": {
@@ -38,14 +39,14 @@
   },
   "tarball": {
     "filename": "aoc-protocol-0.1.0.tgz",
-    "sizeBytes": 275021,
-    "fileCount": 406,
-    "sha256": "2485edd068d9d7627fa77631ac1e39a73760f34d1b321102cc8126e136eb6556",
-    "sha512": "56dcb5f8b84e318ab46d5424c920ce8915f8b826aeb2b430615f00517fcaf23c19626edc728cbe0b9b46f08b103cb21c6148d5608c08f7c7d21a641bc8968841",
-    "npmIntegrity": "sha512-Vty1+LhOMYq0bVQkySDOiRX4uCausrQwYV8AUX/K8jwZYm7ccoy+C5tG8IsQPLIcYUjVYIwI98fSGmQbyJaIQQ==",
+    "sizeBytes": 277452,
+    "fileCount": 407,
+    "sha256": "a404ba9c84be4f8b63a259fe6643e98c409ee060a4ec1396c344ce0b22ec97c3",
+    "sha512": "1210a89af95cbdba122f092cd75d99269eeece2d54aa94d20a45f7de8d0ebe198dc4866121cfea94ef42d4ad0592e6e01faf0d7543c3302da8df60690a43e051",
+    "npmIntegrity": "sha512-EhComvlcvboSLwks112ZJp7uzi1UqpTSCkX33o0OvhmNxIZhIc/qlO9C1K0FkubgH68NdUPDMC2o32BpCkPgUQ==",
     "reproducible": true
   },
-  "generatedAt": "2026-08-19T03:57:46.825Z",
+  "generatedAt": "2026-08-24T02:19:18.872Z",
   "files": [
     "LICENSE",
     "NOTICE",
@@ -452,6 +453,7 @@
     "dist/sovereignty-capabilities/version.d.ts",
     "dist/sovereignty-capabilities/version.d.ts.map",
     "dist/sovereignty-capabilities/version.js",
+    "integration-contract.json",
     "package.json"
   ]
 }
