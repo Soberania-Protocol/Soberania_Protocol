@@ -46,9 +46,21 @@ it: **every finite number must canonicalize to a form that parses back to the sa
 covers the reported cases as golden vectors, a full sweep of every decimal exponent the format
 allows, a seeded 50,000-case battery, subnormals, and explicit no-collision checks.
 
-No publication, tag, release, or `private: false` flip. The frozen
-`aoc.cross-repository-integration@1.0.0` contract and its export set are untouched. The already-
-distributed `@aoc/protocol@0.2.0-rc.0` internal tarball
-(`sha256:dbe8a08f…`) and its release evidence are **immutable and unmodified**: this fix changes the
-source, so it must ship under a new candidate identity, which requires its own founder
-authorization. See `docs/release/RELEASE_CANDIDATE_READINESS.md` §8.
+`@aoc/protocol@0.2.0-rc.0` is **burned**. Its bytes (`sha256:dbe8a08f…`) are vendored and
+checksum-pinned by three internal consumers, so the repaired source could not be packed under that
+identity: doing so would replace an immutable candidate's identity under its own version and
+silently invalidate every downstream pin. Its release manifest, SBOM, consumer lock and RC artifact
+evidence are **unmodified**. The repair therefore ships as the next `rc` candidate, cut under
+founder authorization (P0-CANON-02) and derived by Changesets rather than hand-written.
+
+The frozen `aoc.cross-repository-integration` contract takes a **patch `contractVersion` bump** to
+follow the successor's identity — `protocol.version`, `distribution.candidateIdentity` and
+`distribution.artifactName` all name the candidate. The **export set does not change**, so under
+`changeControl` this is `editorialOrMetadataOnly`: a patch Changeset and a patch contractVersion,
+not a minor and certainly not a major. `protocol.exportMapDigest` is unchanged.
+
+No registry publication, no dist-tag, no `npm publish`, no git tag, no GitHub Release, no
+`private: false` flip, and no stable `0.2.0`. The successor is an **internal tarball** in the sense
+`PRERELEASE_POLICY.md` defines: built from a known commit and handed directly to a consumer,
+verified by checksum, never fetched from a registry. Downstream repositories are not repinned here;
+each is its own increment. See `docs/release/RELEASE_CANDIDATE_READINESS.md` §8–§9.
