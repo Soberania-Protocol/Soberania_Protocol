@@ -190,3 +190,142 @@ the Enterprise runtime identifier. PMFreak declares `@aoc-enterprise/runtime`; t
 not build, own or publish an artifact under that name, and holds no evidence that Soberanía
 Enterprise does. That is deliberately left for the Enterprise increment — until it is settled, the
 three-repository packaging proof cannot close, and the Protocol third of it is what is delivered here.
+
+## 8. P0-CANON-01 — canonical-JSON exponent collision repaired; candidate `0.2.0-rc.0` burned (2026-08-25)
+
+**Founder authorization on record for this increment:** none beyond fixing the defect. **Not
+authorized, and not done:** cutting a new candidate identity, emitting an artifact, regenerating
+release-manifest evidence, npm publication, registry configuration, tag creation, GitHub Release,
+`private: false`, merge. `private: true` still holds.
+
+### What was wrong
+
+`canonicalizeJSON` stripped trailing zeros from the whole rendered number, not from the fractional
+part. In exponential notation the stripped zero was the **exponent's**:
+
+```
+canonicalizeJSON(7.9e-10)   ->  "7.9e-1"
+canonicalizeJSON(7.9e-100)  ->  "7.9e-1"
+```
+
+Distinct values, identical canonical bytes, identical SHA-256 material — and the form did not
+round-trip (`"7.9e-1"` parses as `0.79`). This is an integrity defect in the substrate every
+signature and content digest in the protocol is computed over.
+
+It was not found here. Live Data Rail found it while consuming the authorized `0.2.0-rc.0` internal
+tarball, by differentially fuzzing it against its own independent implementation, and reported it as
+UG-003. That is the reference-consumer validation loop working exactly as this document said it
+should — and a reminder that the golden-vector suite passed throughout, because every fixture in it
+happened to land outside the affected class.
+
+### What was done
+
+The normalization step was **removed**, not narrowed: `Number.prototype.toString()` already emits the
+shortest round-trippable decimal, so the step was dead for its stated purpose and live only for the
+inputs it corrupted. A blocking gate
+(`crypto/__tests__/canonicalize-numeric-fidelity.test.ts`) now enforces the general invariant —
+every finite number canonicalizes to a form that parses back to itself — so the class of defect
+cannot return by any mechanism.
+
+**The public surface did not move, and this is measured.** `npm run fingerprint:public-surface`
+before and after the repair:
+
+| Component | Before | After |
+| --- | --- | --- |
+| `exportMap` | `a67d65b17dcb34c7…` (15 keys) | `a67d65b17dcb34c7…` (15 keys) — unchanged |
+| `runtimeSymbols` | `53ce2a00cb697ae6…` (259) | `53ce2a00cb697ae6…` (259) — unchanged |
+| `buildOutput` | `ac456d52f3b52776…` (402 files) | `94830230a112f97f…` (402 files) — changed |
+| `surfaceDigest` | `01a28808465fb92f…` | `8f3711c084397c7e…` |
+
+Only compiled implementation bytes moved, which is what a behaviour repair is supposed to look like.
+The full suite (299 suites, 3103 tests) passes with **no committed golden hash, fixture, manifest or
+signature changing** — the defect was code-only.
+
+### Cross-implementation evidence
+
+The repaired output was characterized against the independent implementation that found the defect —
+Live Data Rail's `ldr-canonical-json/1`, written separately from this codebase and from the profile
+prose. The reported cases now agree exactly:
+
+| Input | Repaired `aoc-canonical-json/1` | `ldr-canonical-json/1` |
+| --- | --- | --- |
+| `7.9e-10` | `7.9e-10` | `7.9e-10` |
+| `7.9e-100` | `7.9e-100` | `7.9e-100` |
+| `1.5e-100` | `1.5e-100` | `1.5e-100` |
+| `1.25e-10` | `1.25e-10` | `1.25e-10` |
+| `1e-10`, `2e-10`, `0.79`, `1e21`, `1e100`, `5e-324` | unchanged | identical |
+
+Across a deterministic generated corpus spanning nulls, booleans, strings, integers, every decimal
+exponent the format allows, subnormals, arrays and nested objects: **no divergence was observed in
+200,000 compared cases.**
+
+That is a characterization, not a proof. It does not establish equivalence for all inputs; it
+establishes that no counterexample appeared in a corpus built to contain the affected class
+densely. The *proof*-shaped guarantee is the round-trip invariant enforced by the blocking gate,
+which constrains this implementation's output regardless of what any other implementation does.
+
+Live Data Rail was read only, and was not modified by this increment.
+
+### The candidate identity, and why the RC gate is red
+
+`@aoc/protocol@0.2.0-rc.0` is **burned**. Its bytes
+(`sha256:dbe8a08f432a0324ad34eb7cb85054b6dcd23c0d9a073914edf23fccd10445e5`, 407 files, 278,205
+bytes) are already vendored and checksum-pinned by three consumers. Packing the repaired source at
+the same version yields `sha256:dc91dac853aa2f10a3a6cb093229b75edc7300980439c60d647287d1b70baf5e`.
+Writing that digest into the recorded evidence for `0.2.0-rc.0` would replace an immutable
+candidate's identity under its own version and silently invalidate every downstream checksum pin, so
+it was **not** done. `evidence/aoc-protocol-0.2.0-rc.0-release-manifest.json`,
+`evidence/aoc-protocol-0.2.0-rc.0.sbom.spdx.json`,
+`evidence/aoc-protocol-0.2.0-rc.0-consumer.lock.json` and
+`evidence/rc-artifact-0.2.0-rc.0.md` are untouched.
+
+The consequence is deliberate and must not be "fixed" by regeneration:
+
+> `npm run protocol:rc:check` reports **FAIL (1/22)** on `release manifest evidence`, with
+> "manifest sha256 (dbe8a08f…) is stale — current pack is dc91dac8…".
+
+That is the gate correctly reporting that the recorded artifact identity no longer describes the
+source. The resolution is a **new candidate identity**, not new evidence under the old one. The
+other 21 checks pass, including typecheck, build, tests, public API governance, symbol parity,
+version graph, Changeset status, integration contract, reproducibility and consumer fixtures.
+
+### `NEXT_RC_FOUNDER_AUTHORIZATION_REQUIRED`
+
+The authorization recorded in §7 names one candidate identity: *"prerelease family `rc`; candidate
+identity `@aoc/protocol@0.2.0-rc.0`; Changesets authorized to compute and apply **that identity** for
+internal RC validation."* It does not extend to a successor, and the existence of the `0.2.0-rc.0`
+authorization is not evidence of authorization for `0.2.0-rc.1`.
+
+So this increment stops at the boundary. A `patch` Changeset for the fix is queued
+(`.changeset/canonical-json-exponent-collision.md`); `changeset version` was **not** run, no version
+was bumped by hand, and no artifact was emitted.
+
+**What a founder authorization for the next candidate would need to cover, and what would then follow
+mechanically:**
+
+1. The successor identity. Changesets in `pre` mode with tag `rc` derives `0.2.0-rc.1` from the
+   queued `patch` — stated as the expected derivation, not hardcoded: the next increment must let
+   `changeset version` compute it rather than assert it.
+2. `packages/protocol/integration-contract.json` then requires a **patch `contractVersion` bump,
+   `1.0.0` → `1.0.1`**. `scripts/check-integration-contract.mjs` binds `protocol.version` to
+   `packages/protocol/package.json`, and `distribution.candidateIdentity` and
+   `distribution.artifactName` also name the candidate. The **export set does not change**, so under
+   `changeControl` this is `editorialOrMetadataOnly: patch Changeset + contractVersion patch` — not
+   a minor, and certainly not a major.
+3. `npm run protocol:release:manifest` regenerates evidence **under the successor's own identity**,
+   leaving `0.2.0-rc.0`'s evidence in place as the record of a burned candidate.
+4. `npm run protocol:rc:artifact` emits the successor tarball, after which
+   `npm run protocol:rc:check` returns to 22/22.
+5. Per `PRERELEASE_POLICY.md`, the burned candidate must be recorded as such: what failed
+   (canonical-JSON exponent truncation), which version was burned (`0.2.0-rc.0`), and which
+   iteration replaced it. This section is that record for the first two; the third is written when
+   the successor is cut.
+
+### Downstream consequence, not handled here
+
+Three repositories vendor the burned artifact by checksum: PMFreak, Frontera and Live Data Rail.
+Live Data Rail already carries a fail-closed mitigation (it refuses any value whose canonical form
+does not round-trip) and is therefore not emitting colliding digests, but it is still pinned to the
+defective artifact. Whether the other two are exposed in practice **has not been audited by this
+repository** and no claim is made about them. Re-pinning consumers is downstream work that cannot
+begin until a successor candidate exists and is authorized for handover.

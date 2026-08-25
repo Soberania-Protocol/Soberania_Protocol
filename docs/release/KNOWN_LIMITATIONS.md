@@ -1,6 +1,6 @@
 # @aoc/protocol Known Limitations
 
-Verified facts about what the release-candidate state does **not** include, as of 2026-07-15.
+Verified facts about what the release-candidate state does **not** include, as of 2026-08-25.
 Consumers and decision-makers should read this alongside
 [`RELEASE_CANDIDATE_READINESS.md`](RELEASE_CANDIDATE_READINESS.md).
 
@@ -45,3 +45,19 @@ Consumers and decision-makers should read this alongside
     [`RELEASE_CANDIDATE_READINESS.md`](RELEASE_CANDIDATE_READINESS.md). Enterprise's pinned
     tarball and compatibility lock still reference the pre-relicense artifact and will need
     revalidation at the next version cut.
+12. **`@aoc/protocol@0.2.0-rc.0` is burned, and three consumers are still pinned to it.** Its
+    `canonicalizeJSON` truncated the exponent of numbers rendered in exponential notation with a
+    fractional mantissa, so `7.9e-10` and `7.9e-100` produced identical canonical bytes and
+    identical SHA-256 material, and neither round-tripped. Repaired in source by P0-CANON-01, but
+    the repaired code has **no candidate identity yet**: cutting one requires its own founder
+    authorization, which the `0.2.0-rc.0` authorization does not supply. Until a successor is cut
+    and handed over, the only artifact any consumer can vendor is the defective one. PMFreak,
+    Frontera and Live Data Rail all pin it by checksum; Live Data Rail carries a fail-closed
+    mitigation, and **no assessment has been made of whether the other two are affected in
+    practice**. See [`RELEASE_CANDIDATE_READINESS.md`](RELEASE_CANDIDATE_READINESS.md) §8.
+13. **`npm run protocol:rc:check` is red at 21/22, deliberately.** The `release manifest evidence`
+    check reports the recorded `0.2.0-rc.0` manifest digest as stale, because the repaired source no
+    longer packs to it. Regenerating that evidence under the same version would overwrite an
+    immutable candidate's identity and invalidate three downstream checksum pins, so it has not been
+    done. The gate goes green when a successor candidate is authorized and cut — not before, and not
+    by weakening the check.
