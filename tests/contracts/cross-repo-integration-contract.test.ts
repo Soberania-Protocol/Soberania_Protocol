@@ -72,12 +72,56 @@ describe('cross-repository integration contract', () => {
   });
 
   it('carries the founder-authorized candidate identity', () => {
-    expect(contract.protocol.version).toBe('0.2.0-rc.0');
+    // Pinned as a literal on purpose. Each candidate identity is separately
+    // founder-authorized (RELEASE_AUTHORITY.md), so the identity must never
+    // drift as a side effect of an ordinary change -- moving this line is a
+    // deliberate act that belongs in the same commit as the authorization
+    // record. 0.2.0-rc.0 -> 0.2.0-rc.1 was P0-CANON-02.
+    const AUTHORIZED_CANDIDATE = '0.2.0-rc.1';
+    expect(contract.protocol.version).toBe(AUTHORIZED_CANDIDATE);
+    expect(contract.protocol.distribution.candidateIdentity).toBe(AUTHORIZED_CANDIDATE);
     expect(contract.protocol.distribution.prereleaseFamily).toBe('rc');
-    expect(contract.protocol.distribution.candidateIdentity).toBe('0.2.0-rc.0');
+    // The contract must describe the package that actually ships, not a
+    // version someone forgot to update alongside it.
+    expect(contract.protocol.version).toBe(protocolPackage.version);
+    expect(contract.protocol.distribution.artifactName).toBe(
+      `aoc-protocol-${AUTHORIZED_CANDIDATE}.tgz`,
+    );
     // Authorization covers the candidate identity only — not publication.
     expect(protocolPackage.private).toBe(true);
     expect(contract.protocol.distribution.registryPublication).toMatch(/not performed/i);
+  });
+
+  it('keeps the burned candidate on the record rather than quietly dropping it', () => {
+    // 0.2.0-rc.0 was abandoned because canonicalizeJSON could map distinct
+    // numeric inputs onto identical canonical bytes, and therefore identical
+    // digests (UG-003). Three consumers vendored those bytes by checksum. A
+    // superseded candidate that vanishes from the contract is how a consumer
+    // ends up unable to tell a burned pin from a current one.
+    const burned = contract.lastMetadataUpdate?.burnedCandidate;
+    expect(burned).toBeDefined();
+    expect(burned.identity).toBe('0.2.0-rc.0');
+    expect(burned.sha256).toBe(
+      'dbe8a08f432a0324ad34eb7cb85054b6dcd23c0d9a073914edf23fccd10445e5',
+    );
+    expect(burned.identity).not.toBe(contract.protocol.distribution.candidateIdentity);
+    expect(typeof burned.reason).toBe('string');
+    expect(burned.reason.length).toBeGreaterThan(0);
+  });
+
+  it('classifies the contractVersion bump as metadata-only, because the export set held', () => {
+    // changeControl: an identity move with an unchanged export set is
+    // editorialOrMetadataOnly -> patch. If the export map digest ever moves in
+    // the same breath as an identity change, this is the wrong classification
+    // and the contract needs a minor or major instead.
+    expect(contract.contractVersion).toBe('1.0.1');
+    expect(contract.lastMetadataUpdate?.classification).toBe('editorialOrMetadataOnly');
+    expect(contract.changeControl.editorialOrMetadataOnly).toMatch(/patch/i);
+    // The frozen export surface, restated here so the classification is
+    // checked against the fact rather than against itself.
+    expect(contract.protocol.exportMapDigest).toBe(
+      'a67d65b17dcb34c7da84d9a07cb893e073e21e9edbbc621bcae649afa5cdeb45',
+    );
   });
 
   it('forbids the install forms that would defeat independent packaging', () => {

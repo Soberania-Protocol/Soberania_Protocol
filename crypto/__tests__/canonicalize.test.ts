@@ -83,7 +83,11 @@ describe('canonicalizeJSON: numeric behavior', () => {
     expect(canonicalizeJSON(-0)).toBe('0');
   });
 
-  it('renders finite floats via toString with trailing-zero stripping', () => {
+  it('renders finite floats verbatim via Number#toString', () => {
+    // Formerly titled "...with trailing-zero stripping". The stripping step was
+    // removed in P0-CANON-01: `toString()` never emits a trailing fractional
+    // zero, so the step could only ever alter forms it corrupted. None of the
+    // vectors below moved -- see canonicalize-numeric-fidelity.test.ts.
     expect(canonicalizeJSON(3.14)).toBe('3.14');
     expect(canonicalizeJSON(1.5)).toBe('1.5');
     expect(canonicalizeJSON(0.1)).toBe('0.1');

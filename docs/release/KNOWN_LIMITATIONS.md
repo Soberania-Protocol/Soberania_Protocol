@@ -1,6 +1,6 @@
 # @aoc/protocol Known Limitations
 
-Verified facts about what the release-candidate state does **not** include, as of 2026-07-15.
+Verified facts about what the release-candidate state does **not** include, as of 2026-08-25.
 Consumers and decision-makers should read this alongside
 [`RELEASE_CANDIDATE_READINESS.md`](RELEASE_CANDIDATE_READINESS.md).
 
@@ -45,3 +45,18 @@ Consumers and decision-makers should read this alongside
     [`RELEASE_CANDIDATE_READINESS.md`](RELEASE_CANDIDATE_READINESS.md). Enterprise's pinned
     tarball and compatibility lock still reference the pre-relicense artifact and will need
     revalidation at the next version cut.
+12. **`@aoc/protocol@0.2.0-rc.0` is burned, and three consumers are still pinned to it.** Its
+    `canonicalizeJSON` truncated the exponent of numbers rendered in exponential notation with a
+    fractional mantissa, so `7.9e-10` and `7.9e-100` produced identical canonical bytes and
+    identical SHA-256 material, and neither round-tripped. Repaired by P0-CANON-01 and shipped as
+    `0.2.0-rc.1` (`sha256:b0d6ee6f…`) by P0-CANON-02. **The repinning has not happened.** PMFreak,
+    Frontera and Live Data Rail each still vendor the burned `0.2.0-rc.0` by checksum; adopting the
+    successor is a separate increment in each repository. Live Data Rail carries a fail-closed
+    mitigation so it is not emitting colliding digests meanwhile, and **no assessment has been made
+    of whether the other two are affected in practice**. See
+    [`RELEASE_CANDIDATE_READINESS.md`](RELEASE_CANDIDATE_READINESS.md) §8–§9.
+13. **The successor is an internal tarball, not a release.** `0.2.0-rc.1` is not published, not
+    tagged, carries no GitHub Release, and is not stable `0.2.0`. It exists in the git-ignored
+    `dist-rc/` directory and is reproducible from commit `eec79cdd…`. Every limitation above about
+    registry selection, `@aoc` scope control, release-owner designation and `private: true` is
+    unchanged by it.

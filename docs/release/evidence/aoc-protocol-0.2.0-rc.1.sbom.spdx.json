@@ -1,0 +1,44 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "@aoc/protocol@0.2.0-rc.1",
+  "documentNamespace": "http://spdx.org/spdxdocs/@aoc%2fprotocol-0.2.0-rc.1-998d6f8d-7f3d-40bb-a231-74e62fd2771d",
+  "creationInfo": {
+    "created": "2026-08-26T02:54:38.669Z",
+    "creators": [
+      "Tool: npm/cli-10.9.8"
+    ]
+  },
+  "documentDescribes": [
+    "SPDXRef-Package-aoc.protocol-0.2.0-rc.1"
+  ],
+  "packages": [
+    {
+      "name": "@aoc/protocol",
+      "SPDXID": "SPDXRef-Package-aoc.protocol-0.2.0-rc.1",
+      "versionInfo": "0.2.0-rc.1",
+      "packageFileName": "",
+      "description": "Public contracts, semantics, schemas, and compatibility definitions for Soberanía Protocol.",
+      "primaryPackagePurpose": "LIBRARY",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "homepage": "https://github.com/Architects-of-Change-Protocol/Architects_of_Change_Protocol/tree/main/packages/protocol#readme",
+      "licenseDeclared": "Apache-2.0",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/%40aoc/protocol@0.2.0-rc.1"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-Package-aoc.protocol-0.2.0-rc.1",
+      "relationshipType": "DESCRIBES"
+    }
+  ]
+}

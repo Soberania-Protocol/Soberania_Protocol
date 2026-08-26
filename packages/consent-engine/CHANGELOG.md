@@ -1,5 +1,12 @@
 # @aoc/consent-engine
 
+## 0.1.1-rc.1
+
+### Patch Changes
+
+- Updated dependencies [b5ced70]
+  - @aoc/protocol@0.2.0-rc.1
+
 ## 0.1.1-rc.0
 
 ### Patch Changes

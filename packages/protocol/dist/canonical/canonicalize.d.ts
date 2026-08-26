@@ -13,10 +13,14 @@
  * - Arrays preserve input order and are rendered as comma-joined elements
  *   wrapped in `[]`.
  * - Strings are rendered via JSON string-escaping (`JSON.stringify`).
- * - Integers render via `Number.prototype.toString()` (no leading zeros,
- *   no trailing decimal point).
- * - Non-integer finite numbers render via `Number.prototype.toString()`
- *   with trailing fractional zeros stripped.
+ * - Finite numbers -- integer or not -- render via
+ *   `Number.prototype.toString()`, verbatim. That is the shortest decimal
+ *   string which reads back as exactly the same double (ECMA-262 selects the
+ *   fewest digits for which `Number(s) === x`), so it carries no leading
+ *   zeros, no trailing decimal point, and no trailing fractional zeros. It is
+ *   therefore already canonical, and NO further normalization is applied.
+ *   Exponential forms such as `7.9e-10` are emitted unchanged, exponent
+ *   included.
  * - `true`, `false`, and `null` render as the literals `true`, `false`,
  *   `null`.
  * - No insignificant whitespace is ever emitted.
@@ -53,6 +57,34 @@
  * reverse is not), so `crypto/canonicalize.ts` now re-exports this module
  * instead of the other way around. See
  * `docs/architecture/sovereign-asset-core.md` §"Canonicalization ownership".
+ *
+ * Repair note (P0-CANON-01): this module previously applied a trailing-zero
+ * strip -- `numberString.replace(/0+$/, '')` -- to any rendered form
+ * containing a `.`. The intent was to remove trailing fractional zeros. The
+ * effect, for a number rendered in exponential notation, was to remove the
+ * trailing zero of the EXPONENT:
+ *
+ *     canonicalizeJSON(7.9e-10)   ->  "7.9e-1"
+ *     canonicalizeJSON(7.9e-100)  ->  "7.9e-1"
+ *
+ * Two values ninety orders of magnitude apart produced identical canonical
+ * bytes and therefore identical cryptographic material, and neither form read
+ * back as its input (`"7.9e-1"` parses as `0.79`). Found downstream by Live
+ * Data Rail while consuming `@aoc/protocol@0.2.0-rc.0` and reported as UG-003.
+ *
+ * The step was not merely mis-scoped, it was dead for its stated purpose:
+ * `Number.prototype.toString()` never emits a trailing fractional zero, so the
+ * only inputs it could ever alter were the ones it corrupted. It has been
+ * removed rather than narrowed. The invariant that makes the entire class of
+ * defect impossible -- every finite number canonicalizes to a form that parses
+ * back to itself -- is enforced by
+ * `crypto/__tests__/canonicalize-numeric-fidelity.test.ts`, which is blocking.
+ *
+ * `-0` renders as `"0"` and is therefore not distinguishable from `0` in
+ * canonical form. That is pre-existing behaviour, deliberately left unchanged:
+ * altering it would change the bytes of every already-signed payload
+ * containing `-0`. Making `-0` distinguishable would be a separate, breaking
+ * profile decision.
  */
 export declare const CANONICAL_JSON_PROFILE: "aoc-canonical-json/1";
 export declare function canonicalizeJSON(value: any): string;
