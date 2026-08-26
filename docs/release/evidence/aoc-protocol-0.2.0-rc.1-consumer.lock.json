@@ -7,10 +7,10 @@
   "sourceClean": true,
   "artifact": {
     "filename": "aoc-protocol-0.2.0-rc.1.tgz",
-    "bytes": 280169,
-    "sha256": "dd828c3a60966a65809448bed7d5c9e5f22a6365b16d91af6610f5df28dab1a1",
-    "sha512": "efa0b27e51a1f2bcdb01eebd1eef82019da60fc897f6a4697c156970f591b6870f45fccf0021d93f03a5d2638e12b06cab3fa9ac641d005f58b1236a8d619141",
-    "integrity": "sha512-76CyflGh8rzbAe69Hu+CAZ2mD8iX9qRpfBVpcPWRtocPRfzPACHZPwOl0mOOErBsqz+prGQdAF9YsSNqjWGRQQ==",
+    "bytes": 280149,
+    "sha256": "b0d6ee6ff2010c4addab0bd683e2a89b9b2246f430c7e892fdc3d4123f3a3f60",
+    "sha512": "889aa0c28f592dec16858e0758e5f5a307e99603b37239360ae3ce708ee77bc661c0cf1d7a40daced6818647e0a2cd0843d9921fa7e679f340db28b1f033b66c",
+    "integrity": "sha512-iJqgwo9ZLewWhY4HWOX1owfplgOzcjk2CuPOcI7ne8ZhwM8dekDaztaBhkfgos0IQ9mSH6fmefNA2yix8DO2bA==",
     "reproducible": true,
     "fileCount": 407
   },

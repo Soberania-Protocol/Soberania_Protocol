@@ -352,7 +352,7 @@ holds.
 | --- | --- |
 | **BURNED** | `@aoc/protocol@0.2.0-rc.0`, `sha256:dbe8a08f432a0324ad34eb7cb85054b6dcd23c0d9a073914edf23fccd10445e5` |
 | **WHY** | Canonical-JSON exponent truncation: `canonicalizeJSON` could map distinct numeric inputs to identical canonical bytes and therefore identical digests, and its output did not round-trip. Found by Live Data Rail (UG-003) while consuming the artifact. |
-| **REPLACED BY** | `@aoc/protocol@0.2.0-rc.1`, `sha256:dd828c3a60966a65809448bed7d5c9e5f22a6365b16d91af6610f5df28dab1a1` |
+| **REPLACED BY** | `@aoc/protocol@0.2.0-rc.1`, `sha256:b0d6ee6ff2010c4addab0bd683e2a89b9b2246f430c7e892fdc3d4123f3a3f60` |
 | **STATUS** | Internal RC candidate for validation. **Not published, not stable, not GA.** |
 
 `0.2.0-rc.0` is burned permanently and its number is never reused. Its release manifest, SBOM,
@@ -398,8 +398,8 @@ points at that commit, and the manifest records `protocolWorkspaceClean: true`.
 `git show eec79cdd…:packages/protocol/package.json` reports version `0.2.0-rc.1` — the recorded
 commit builds the recorded artifact.
 
-**Reproducibility:** three independent packs from that commit are byte-identical at
-`sha256:dd828c3a…`.
+**Reproducibility:** independent packs from that commit are byte-identical at
+`sha256:b0d6ee6f…` — **in a clean POSIX checkout**. See the environment finding below.
 
 ### The artifact itself was verified, not only the source
 
@@ -426,6 +426,33 @@ Full evidence: [`evidence/rc-artifact-0.2.0-rc.1.md`](evidence/rc-artifact-0.2.0
 a successor candidate now exists and carries its own evidence, **not** because `0.2.0-rc.0`'s
 evidence was rewritten. No gate was weakened and no `continue-on-error` was introduced.
 
+### Reproducibility environment: the first evidence recorded the wrong bytes
+
+The first attempt at this evidence recorded `sha256:dd828c3a…` / 280,169 bytes. CI packed the same
+commit, got `b0d6ee6f…` / 280,149 bytes, and the RC gate correctly failed as stale.
+
+The file **contents were byte-identical**. The divergence was tar header metadata: this working tree
+sits on a Windows drive mounted into WSL (`/mnt/c`, DrvFs), which cannot represent POSIX permission
+bits, so every packed file is presented as `0755` and that mode is written into the tar. A smaller
+second contribution came from CRLF line endings in `NOTICE`, `README.md` and `LICENSE` — the three
+text files npm always packs regardless of the `files` array.
+
+This was confirmed, not inferred: a clean clone at `7ce27f1` reproduces **rc.0's recorded
+`sha256:dbe8a08f…` exactly**, matching what PMFreak, Frontera and CI independently recorded. The
+clean POSIX checkout is the canonical packing environment; this working tree never was.
+
+The evidence was regenerated from a clean clone at `eec79cdd…` and the recorded identity corrected
+to `b0d6ee6f…`. **The gate was not adjusted to accept the wrong bytes**, and the artifact offered for
+handover was replaced with the canonical one. Nothing about the source, the fix, the candidate
+identity or the contract changed — only the recorded bytes, which had been describing a local
+packing environment rather than the commit.
+
+Two consequences worth stating plainly. `protocol:rc:check` **cannot pass on a DrvFs checkout**: it
+packs locally and compares against canonical evidence, so it will always report stale there. It is
+green in CI and in a clean clone, which are the environments that decide. And anyone reproducing
+this artifact must pack from a POSIX checkout — a Windows-mounted clone yields a different SHA-256
+from identical source, which is environmental rather than a tamper signal.
+
 ### Provenance note: the artifact predates a power loss, and was re-verified after it
 
 The candidate was cut, packed and evidenced, and then the machine lost power part-way through the
@@ -436,17 +463,25 @@ not completed.
 Because release evidence is a provenance claim, the artifact-level claims were re-established after
 recovery rather than carried over on trust:
 
-- a fresh pack from the recovered `eec79cdd…` is **byte-identical** to the surviving tarball
-  (`sha256:dd828c3a…`), so the recorded checksum still describes bytes this commit produces;
+- a fresh pack from the recovered `eec79cdd…` reproduced the surviving tarball byte-for-byte, so the
+  recovered commit and the recovered bytes were confirmed to agree with each other;
 - the surviving tarball was re-installed into a clean room and re-exercised — `7.9e-10` →
   `"7.9e-10"`, `7.9e-100` → `"7.9e-100"`, distinct outputs, distinct digests, 3,770-value round-trip
   sweep with zero failures;
-- `protocol:rc:check` (22/22), `validate:release` (exit 0), `check:integration-contract`,
-  `release:status`, `check:version-graph`, the semantic-ownership lint and the surface fingerprint
-  were all re-run to completion on the recovered tree.
+- every governance gate was re-run to completion on the recovered tree.
+
+That re-verification was necessary but **not sufficient**, and it is worth being precise about why.
+It established internal consistency — this tree packs what it recorded — and internal consistency is
+exactly what a wrong-environment artifact also has. It took CI, packing the same commit in a
+different environment, to show that both the surviving bytes and the fresh local pack were products
+of the DrvFs mount rather than of the commit. The recorded identity was corrected accordingly, and
+the tarball offered for handover was replaced with the canonical one (see the environment finding
+above).
 
 No candidate identity was recomputed, no `changeset version` was re-run, and no `rc.2` was created.
-The interruption changed nothing about what this candidate is.
+Neither the interruption nor the environment finding changed what this candidate **is** — the
+source, the fix, the derived version and the contract are all untouched. What changed is the
+recorded description of its bytes, which had been wrong.
 
 ### Internal handover: authorized, not executed
 

@@ -49,7 +49,7 @@ Consumers and decision-makers should read this alongside
     `canonicalizeJSON` truncated the exponent of numbers rendered in exponential notation with a
     fractional mantissa, so `7.9e-10` and `7.9e-100` produced identical canonical bytes and
     identical SHA-256 material, and neither round-tripped. Repaired by P0-CANON-01 and shipped as
-    `0.2.0-rc.1` (`sha256:dd828c3a…`) by P0-CANON-02. **The repinning has not happened.** PMFreak,
+    `0.2.0-rc.1` (`sha256:b0d6ee6f…`) by P0-CANON-02. **The repinning has not happened.** PMFreak,
     Frontera and Live Data Rail each still vendor the burned `0.2.0-rc.0` by checksum; adopting the
     successor is a separate increment in each repository. Live Data Rail carries a fail-closed
     mitigation so it is not emitting colliding digests meanwhile, and **no assessment has been made

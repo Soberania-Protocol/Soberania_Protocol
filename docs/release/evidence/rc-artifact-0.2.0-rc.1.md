@@ -17,15 +17,15 @@ This candidate exists for one reason: **`0.2.0-rc.0` is burned.** See
 | Package | `@aoc/protocol` |
 | Version | `0.2.0-rc.1` |
 | **Tarball filename** | `aoc-protocol-0.2.0-rc.1.tgz` |
-| **SHA-256** | `dd828c3a60966a65809448bed7d5c9e5f22a6365b16d91af6610f5df28dab1a1` |
-| **SHA-512** | `efa0b27e51a1f2bcdb01eebd1eef82019da60fc897f6a4697c156970f591b6870f45fccf0021d93f03a5d2638e12b06cab3fa9ac641d005f58b1236a8d619141` |
-| npm integrity | `sha512-76CyflGh8rzbAe69Hu+CAZ2mD8iX9qRpfBVpcPWRtocPRfzPACHZPwOl0mOOErBsqz+prGQdAF9YsSNqjWGRQQ==` |
-| **Size** | 280,169 bytes |
+| **SHA-256** | `b0d6ee6ff2010c4addab0bd683e2a89b9b2246f430c7e892fdc3d4123f3a3f60` |
+| **SHA-512** | `889aa0c28f592dec16858e0758e5f5a307e99603b37239360ae3ce708ee77bc661c0cf1d7a40daced6818647e0a2cd0843d9921fa7e679f340db28b1f033b66c` |
+| npm integrity | `sha512-iJqgwo9ZLewWhY4HWOX1owfplgOzcjk2CuPOcI7ne8ZhwM8dekDaztaBhkfgos0IQ9mSH6fmefNA2yix8DO2bA==` |
+| **Size** | 280,149 bytes |
 | **File count** | 407 |
 | **Exports fingerprint** | `a67d65b17dcb34c7da84d9a07cb893e073e21e9edbbc621bcae649afa5cdeb45` (15 export keys) — **identical to rc.0** |
 | Public surface digest | `8f3711c084397c7e182bbb367ff3972b14619e9a2536ee0690f5dc502f09f542` |
 | **`protocolWorkspaceClean`** | **`true`** |
-| **Reproducibility** | Three independent packs from the RC source commit are byte-identical |
+| **Reproducibility** | Independent packs from the RC source commit are byte-identical, in a clean POSIX checkout — see "Reproducibility environment" below |
 | License | Apache-2.0 (`LICENSE` + `NOTICE` shipped) |
 | Runtime dependencies | none |
 | Integration contract | `aoc.cross-repository-integration@1.0.1`, `frozen`, shipped as unexported metadata |
@@ -76,8 +76,8 @@ what was distributed and why it was abandoned — not as something to be correct
 | | rc.0 | rc.1 |
 | --- | --- | --- |
 | Version | `0.2.0-rc.0` | `0.2.0-rc.1` (derived by `changeset version`, never hand-edited) |
-| SHA-256 | `dbe8a08f…` | `dd828c3a…` |
-| Size / files | 278,205 B / 407 | 280,169 B / 407 |
+| SHA-256 | `dbe8a08f…` | `b0d6ee6f…` |
+| Size / files | 278,205 B / 407 | 280,149 B / 407 |
 | contractVersion | `1.0.0` | `1.0.1` (`editorialOrMetadataOnly` — identity moved, export set did not) |
 | **Export map digest** | `a67d65b1…` | `a67d65b1…` — **unchanged** |
 | **Export keys** | 15 | 15 — **unchanged** |
@@ -109,6 +109,36 @@ design — it ships as unexported metadata, the same class as `LICENSE`.
 The repository's own fixtures (`npm run protocol:consumer:check`) install this artifact and compile
 and execute TypeScript/CJS, JavaScript/CJS, TypeScript/ESM and contract-verification consumers
 against every public subpath. No consumer deep-imports.
+
+## Reproducibility environment — read this before reproducing
+
+The recorded SHA-256 is reproducible from a **clean POSIX checkout**. It is not reproducible from a
+checkout on a Windows drive mounted into WSL, and the difference is not in the file contents.
+
+The first attempt at this evidence recorded `sha256:dd828c3a…` / 280,169 bytes, packed from a
+working tree on a `/mnt/c` DrvFs mount. CI packed the same commit and got
+`b0d6ee6f…` / 280,149 bytes, and the RC gate failed as stale. Extracting both tarballs showed the
+**file contents were byte-identical**; the divergence was entirely tar header metadata:
+
+| | clean checkout | DrvFs checkout |
+| --- | --- | --- |
+| File mode in tar header | `0644` | `0755` |
+| `NOTICE`, `README.md`, `LICENSE` line endings on disk | LF | CRLF |
+
+DrvFs cannot represent POSIX permission bits, so every packed file is presented as `0755` and that
+mode is written into the tar header. The CRLF contamination in the three text files npm always packs
+was a second, smaller contribution — 20 bytes across the three.
+
+This was confirmed rather than assumed: a clean clone of this repository at
+`7ce27f1be0980bf75a23eb4b15ed0a45d8bfd2f3` reproduces **`0.2.0-rc.0`'s recorded
+`sha256:dbe8a08f…d10445e5` exactly**, matching what PMFreak, Frontera and CI all independently
+recorded. The clean POSIX checkout is the canonical packing environment; the DrvFs working tree
+never was, and the wrong-checksum evidence was corrected rather than the gate being adjusted to
+accept it.
+
+**Anyone reproducing this artifact must pack from a POSIX checkout.** A Windows-mounted clone will
+produce a different SHA-256 from identical source, and that difference is environmental, not a
+tamper signal.
 
 ## Provenance: re-verified after an interrupted run
 

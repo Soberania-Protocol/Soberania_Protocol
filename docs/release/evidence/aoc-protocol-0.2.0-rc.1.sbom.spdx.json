@@ -3,9 +3,9 @@
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
   "name": "@aoc/protocol@0.2.0-rc.1",
-  "documentNamespace": "http://spdx.org/spdxdocs/@aoc%2fprotocol-0.2.0-rc.1-40e38f62-82bb-4fe3-8af0-7b6c6f1f08e3",
+  "documentNamespace": "http://spdx.org/spdxdocs/@aoc%2fprotocol-0.2.0-rc.1-998d6f8d-7f3d-40bb-a231-74e62fd2771d",
   "creationInfo": {
-    "created": "2026-08-25T23:39:59.428Z",
+    "created": "2026-08-26T02:54:38.669Z",
     "creators": [
       "Tool: npm/cli-10.9.8"
     ]
