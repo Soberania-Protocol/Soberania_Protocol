@@ -281,24 +281,25 @@ it was **not** done. `evidence/aoc-protocol-0.2.0-rc.0-release-manifest.json`,
 
 The consequence is deliberate and must not be "fixed" by regeneration:
 
-> `npm run protocol:rc:check` reports **FAIL (1/22)** on `release manifest evidence`, with
+> `npm run protocol:rc:check` reported **FAIL (1/22)** on `release manifest evidence`, with
 > "manifest sha256 (dbe8a08f…) is stale — current pack is dc91dac8…".
 
-That is the gate correctly reporting that the recorded artifact identity no longer describes the
-source. The resolution is a **new candidate identity**, not new evidence under the old one. The
-other 21 checks pass, including typecheck, build, tests, public API governance, symbol parity,
-version graph, Changeset status, integration contract, reproducibility and consumer fixtures.
+That was the gate correctly reporting that the recorded artifact identity no longer described the
+source. The resolution is a **new candidate identity**, not new evidence under the old one — which
+is what §9 does. The gate is green again because a successor exists, **not** because rc.0's evidence
+was rewritten.
 
-### `NEXT_RC_FOUNDER_AUTHORIZATION_REQUIRED`
+### `NEXT_RC_FOUNDER_AUTHORIZATION_REQUIRED` — raised here, granted in §9
 
 The authorization recorded in §7 names one candidate identity: *"prerelease family `rc`; candidate
 identity `@aoc/protocol@0.2.0-rc.0`; Changesets authorized to compute and apply **that identity** for
 internal RC validation."* It does not extend to a successor, and the existence of the `0.2.0-rc.0`
 authorization is not evidence of authorization for `0.2.0-rc.1`.
 
-So this increment stops at the boundary. A `patch` Changeset for the fix is queued
-(`.changeset/canonical-json-exponent-collision.md`); `changeset version` was **not** run, no version
-was bumped by hand, and no artifact was emitted.
+So the repair increment stopped at that boundary with a `patch` Changeset queued and no version
+cut. **The authorization was subsequently granted (P0-CANON-02) and the successor was cut in §9
+below**, in the same pull request. The five numbered items that follow were the plan at the time;
+§9 records what actually happened against each.
 
 **What a founder authorization for the next candidate would need to cover, and what would then follow
 mechanically:**
@@ -329,3 +330,136 @@ does not round-trip) and is therefore not emitting colliding digests, but it is 
 defective artifact. Whether the other two are exposed in practice **has not been audited by this
 repository** and no claim is made about them. Re-pinning consumers is downstream work that cannot
 begin until a successor candidate exists and is authorized for handover.
+
+## 9. P0-CANON-02 — candidate `0.2.0-rc.1` cut; `0.2.0-rc.0` burned (2026-08-25)
+
+**Founder authorization on record:** prerelease family `rc` (unchanged); compute and cut the **next**
+`rc` candidate of `@aoc/protocol` for internal RC validation, carrying the canonical-JSON repair;
+the minimum governed metadata changes needed to make it internally consumable; successor-specific
+release evidence; production of the successor internal packed tarball; and direct **internal**
+handover of that exact checksum-pinned artifact to `Republika-Network/live-data-rail`,
+`Republika-Network/Frontera` and `Republika-Network/pmfreak`.
+
+**Not authorized, and not done:** npm or any registry publication, dist-tag creation or movement,
+`npm publish`, `private: false`, git tag creation, GitHub Release, stable `0.2.0`, General
+Availability, changing the prerelease family away from `rc`, widening the public export surface,
+modifying any downstream repository, or automatically repinning any consumer. `private: true` still
+holds.
+
+### The burned → replacement chain
+
+| | |
+| --- | --- |
+| **BURNED** | `@aoc/protocol@0.2.0-rc.0`, `sha256:dbe8a08f432a0324ad34eb7cb85054b6dcd23c0d9a073914edf23fccd10445e5` |
+| **WHY** | Canonical-JSON exponent truncation: `canonicalizeJSON` could map distinct numeric inputs to identical canonical bytes and therefore identical digests, and its output did not round-trip. Found by Live Data Rail (UG-003) while consuming the artifact. |
+| **REPLACED BY** | `@aoc/protocol@0.2.0-rc.1`, `sha256:dd828c3a60966a65809448bed7d5c9e5f22a6365b16d91af6610f5df28dab1a1` |
+| **STATUS** | Internal RC candidate for validation. **Not published, not stable, not GA.** |
+
+`0.2.0-rc.0` is burned permanently and its number is never reused. Its release manifest, SBOM,
+consumer lock and artifact evidence are **retained unmodified** as the record of what was
+distributed and why it was abandoned — they are not defects to be corrected.
+
+The impact finding from §8 is unchanged and was not revisited on new evidence:
+**`CANONICALIZATION_DEFECT_IMPACT = CODE_ONLY`.** No committed golden hash, fixture, manifest or
+signature was computed over a value in the affected class.
+
+### The successor identity was derived, not chosen
+
+`changeset version` in pre mode (tag `rc`) computed `0.2.0-rc.1` from the queued `patch` changeset.
+Nothing was hand-edited to reach that number, and the changeset body was reconciled **before**
+versioning — pre-mode folds it into `CHANGELOG.md` permanently, and its closing paragraphs still
+claimed no version had been cut.
+
+Five other packages moved with it — `@aoc/asset-protocolization`, `@aoc/audit-sdk`,
+`@aoc/capability-tokens`, `@aoc/consent-engine`, `@aoc/scoped-access`, all `0.1.1-rc.0` →
+`0.1.1-rc.1`. Every one declares a direct `@aoc/protocol` dependency, so these are dependency-graph
+consequences under `updateInternalDependencies: patch`, not unrelated movement. Nothing else in the
+workspace changed version.
+
+### Integration contract: `1.0.0` → `1.0.1`
+
+Only the identity the contract binds moved — `protocol.version`,
+`distribution.candidateIdentity`, `distribution.artifactName`. The **export set, export map digest
+(`a67d65b1…`, 15 keys), install forms and consumer obligations are all unchanged**, which is exactly
+`changeControl`'s `editorialOrMetadataOnly` classification: patch Changeset, patch contractVersion.
+Not a minor, not a major. `check:integration-contract` now reports
+`aoc.cross-repository-integration@1.0.1` binding `@aoc/protocol@0.2.0-rc.1` across 15 export paths.
+
+A `lastMetadataUpdate` block in the contract carries the burned candidate forward by name and
+checksum, so the contract itself records what `0.2.0-rc.0` was and why it was abandoned.
+
+### Clean source → artifact chain
+
+The rc.0 cycle produced evidence from a dirty tree and had to be redone. That was not repeated: the
+candidate source was committed first (`eec79cdd4019dd42e1767909c5bd4e26d04c6f0f`, clean tree), and
+only then was the artifact packed and evidenced. Every source-identity field in this evidence set
+points at that commit, and the manifest records `protocolWorkspaceClean: true`.
+
+`git show eec79cdd…:packages/protocol/package.json` reports version `0.2.0-rc.1` — the recorded
+commit builds the recorded artifact.
+
+**Reproducibility:** three independent packs from that commit are byte-identical at
+`sha256:dd828c3a…`.
+
+### The artifact itself was verified, not only the source
+
+The packed tarball was installed into a clean room and exercised through declared exports only:
+
+```
+canonicalizeJSON(7.9e-10)   ->  "7.9e-10"
+canonicalizeJSON(7.9e-100)  ->  "7.9e-100"
+outputs distinct            ->  true
+digests distinct            ->  true
+round-trip sweep            ->  3,770 values across every reachable decimal exponent, 0 failures
+```
+
+`integration-contract.json` was read **by path** and reports `1.0.1` / `0.2.0-rc.1`; importing it as
+a module specifier correctly fails with `ERR_PACKAGE_PATH_NOT_EXPORTED`, which is the design. The
+repository's own fixtures install this artifact and exercise TS/CJS, JS/CJS, TS/ESM and
+contract-verification consumers across every public subpath, with no deep imports.
+
+Full evidence: [`evidence/rc-artifact-0.2.0-rc.1.md`](evidence/rc-artifact-0.2.0-rc.1.md).
+
+### The RC gate is green again — for the right reason
+
+`npm run protocol:rc:check` returns **22/22**. The `release manifest evidence` check passes because
+a successor candidate now exists and carries its own evidence, **not** because `0.2.0-rc.0`'s
+evidence was rewritten. No gate was weakened and no `continue-on-error` was introduced.
+
+### Provenance note: the artifact predates a power loss, and was re-verified after it
+
+The candidate was cut, packed and evidenced, and then the machine lost power part-way through the
+final `validate:release` run. Nothing was reset, restored or re-cut on recovery: the local commit
+`eec79cdd…` and the packed bytes both survived, and the sequence resumed from the one step that had
+not completed.
+
+Because release evidence is a provenance claim, the artifact-level claims were re-established after
+recovery rather than carried over on trust:
+
+- a fresh pack from the recovered `eec79cdd…` is **byte-identical** to the surviving tarball
+  (`sha256:dd828c3a…`), so the recorded checksum still describes bytes this commit produces;
+- the surviving tarball was re-installed into a clean room and re-exercised — `7.9e-10` →
+  `"7.9e-10"`, `7.9e-100` → `"7.9e-100"`, distinct outputs, distinct digests, 3,770-value round-trip
+  sweep with zero failures;
+- `protocol:rc:check` (22/22), `validate:release` (exit 0), `check:integration-contract`,
+  `release:status`, `check:version-graph`, the semantic-ownership lint and the surface fingerprint
+  were all re-run to completion on the recovered tree.
+
+No candidate identity was recomputed, no `changeset version` was re-run, and no `rc.2` was created.
+The interruption changed nothing about what this candidate is.
+
+### Internal handover: authorized, not executed
+
+The artifact is available for direct internal handover at the repo-relative path
+`dist-rc/aoc-protocol-0.2.0-rc.1.tgz`, alongside `dist-rc/protocol-consumer.lock.json` and
+`dist-rc/SHA256SUMS`. `dist-rc/` is git-ignored by design: the bytes are reproducible from the
+recorded commit, so the commit plus this evidence is the record.
+
+**No downstream repository has adopted it, and none was modified here.** Live Data Rail, Frontera and
+PMFreak each remain pinned to the burned `0.2.0-rc.0`. Repinning is a separate increment per
+repository, with its own PR and its own verification, and nothing in this document should be read as
+claiming it has happened.
+
+Live Data Rail additionally carries a fail-closed downstream mitigation for UG-003, so it is not
+emitting colliding digests while still pinned. **Whether Frontera or PMFreak are exposed in practice
+has not been audited by this repository, and no claim is made about them.**
