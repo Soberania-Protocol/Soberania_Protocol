@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.aocprotocol.org/sitemap.xml
+Sitemap: https://soberaniaprotocol.org/sitemap.xml

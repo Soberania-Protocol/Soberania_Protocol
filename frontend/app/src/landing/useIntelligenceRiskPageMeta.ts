@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
+import { SOBERANIA_PROTOCOL_URL } from './brand';
 
-const PAGE_URL = 'https://www.aocprotocol.org/assurance/intelligence-risk';
+const PAGE_URL = `${SOBERANIA_PROTOCOL_URL}/assurance/intelligence-risk`;
 const TITLE = 'Intelligence Risk — a Soberanía Assurance Module | Soberanía Assurance';
 const DESCRIPTION =
   'Intelligence Risk is the specialized Soberanía Assurance module that assesses Knowledge Loss, Key Person Dependency, Institutional Memory and Constitutional Index posture. Part of Soberanía Assurance, the assessment and continuous-monitoring layer for Soberanía Protocol and Soberanía Enterprise.';

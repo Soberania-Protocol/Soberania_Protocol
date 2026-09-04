@@ -1,7 +1,6 @@
 import { MINERALS } from '../enterprise/minerals';
+import { PROTOCOL_PACKAGE_URL } from '../brand';
 
-const REPO_URL = 'https://github.com/Architects-of-Change-Protocol/Architects_of_Change_Protocol';
-const PROTOCOL_PACKAGE_URL = `${REPO_URL}/tree/main/packages/protocol`;
 const m = MINERALS.amethyst;
 
 // Dark bookend closing CTA — matching the rhythm of ../enterprise/CtaSection.tsx,

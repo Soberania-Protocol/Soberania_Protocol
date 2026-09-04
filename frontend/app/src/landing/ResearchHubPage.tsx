@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
 import { LogoRotating } from '../components/logo/LogoRotating';
 import { CONSTITUTIONAL_INDEX_ORGANIZATIONS } from './assuranceIndexData';
+import { SOBERANIA_PROTOCOL_URL } from './brand';
 import './assurance.css';
 
-const PAGE_URL = 'https://www.aocprotocol.org/research';
+const PAGE_URL = `${SOBERANIA_PROTOCOL_URL}/research`;
 const FOUNDER_ESSAY_URL =
   'https://www.linkedin.com/pulse/i-started-looking-sovereignty-found-constitutional-valverde-checa-hnpye/';
 
@@ -62,7 +63,7 @@ function usePageMeta() {
     );
     setMeta('og:url', PAGE_URL, true);
     setMeta('og:type', 'website', true);
-    setMeta('og:image', 'https://www.aocprotocol.org/og-image.png', true);
+    setMeta('og:image', `${SOBERANIA_PROTOCOL_URL}/og-image.png`, true);
     setMeta('og:site_name', 'Soberanía Assurance', true);
 
     setMeta('twitter:card', 'summary_large_image');
@@ -100,16 +101,16 @@ function buildJsonLd() {
       publisher: {
         '@type': 'Organization',
         name: 'Soberanía Assurance',
-        url: 'https://www.aocprotocol.org',
+        url: SOBERANIA_PROTOCOL_URL,
         logo: {
           '@type': 'ImageObject',
-          url: 'https://www.aocprotocol.org/og-image.png',
+          url: `${SOBERANIA_PROTOCOL_URL}/og-image.png`,
         },
       },
       breadcrumb: {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Soberanía Assurance', item: 'https://www.aocprotocol.org' },
+          { '@type': 'ListItem', position: 1, name: 'Soberanía Assurance', item: SOBERANIA_PROTOCOL_URL },
           { '@type': 'ListItem', position: 2, name: 'Research Hub', item: PAGE_URL },
         ],
       },
@@ -131,13 +132,13 @@ function buildJsonLd() {
           '@type': 'ListItem',
           position: 2,
           name: 'AI Governance vs AI Sovereignty',
-          url: 'https://www.aocprotocol.org/ai-governance-vs-ai-sovereignty',
+          url: `${SOBERANIA_PROTOCOL_URL}/ai-governance-vs-ai-sovereignty`,
         },
         {
           '@type': 'ListItem',
           position: 3,
           name: 'Constitutional Index Methodology',
-          url: 'https://www.aocprotocol.org/assurance/methodology',
+          url: `${SOBERANIA_PROTOCOL_URL}/assurance/methodology`,
         },
       ],
     },
@@ -151,14 +152,14 @@ function buildJsonLd() {
         '@type': 'ListItem',
         position: i + 1,
         name: `${org.name} Constitutional Assessment`,
-        url: `https://www.aocprotocol.org/research/${org.slug}-assessment`,
+        url: `${SOBERANIA_PROTOCOL_URL}/research/${org.slug}-assessment`,
       })),
     },
     {
       '@context': 'https://schema.org',
       '@type': 'Organization',
       name: 'Soberanía Assurance',
-      url: 'https://www.aocprotocol.org',
+      url: SOBERANIA_PROTOCOL_URL,
       description:
         'Soberanía Assurance provides constitutional assessments of AI systems, evaluating Governance and Sovereignty to establish constitutional posture and trust.',
     },

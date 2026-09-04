@@ -25,7 +25,7 @@ describe('Protocol closing handoff', () => {
     ]);
     expect(links[0]).toHaveAttribute(
       'href',
-      'https://github.com/Architects-of-Change-Protocol/Architects_of_Change_Protocol/tree/main/packages/protocol',
+      'https://github.com/Republika-Network/Soberania_Protocol/tree/main/packages/protocol',
     );
     expect(links[1]).toHaveAttribute('href', '/?view=docs');
     expect(screen.queryByRole('link', { name: /enterprise/i })).not.toBeInTheDocument();
@@ -35,16 +35,17 @@ describe('Protocol closing handoff', () => {
     render(
       <>
         <CtaSection />
-        <ProtocolFooter accent="amethyst" />
+        <ProtocolFooter accent="amethyst" surface="protocol" />
       </>,
     );
 
     expect(screen.queryByText(/protocol handoff/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/ship digital assets/i)).not.toBeInTheDocument();
     expect(screen.getByRole('contentinfo')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Enterprise' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Frontera Systems' })).toHaveAttribute(
       'href',
-      '/?view=enterprise',
+      'https://frontera-systems.com',
     );
+    expect(screen.queryByRole('link', { name: 'Enterprise' })).not.toBeInTheDocument();
   });
 });

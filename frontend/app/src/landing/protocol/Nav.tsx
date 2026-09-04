@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { LogoRotating } from '../../components/logo/LogoRotating';
 import { MINERALS } from '../enterprise/minerals';
+import { FRONTERA_SYSTEMS_NAME, FRONTERA_SYSTEMS_URL } from '../brand';
 
 // Structurally identical to ../enterprise/Nav.tsx's EnterpriseNav (same
 // sticky dark bar, same sizing, spacing and mobile-disclosure interaction) —
@@ -9,10 +10,13 @@ import { MINERALS } from '../enterprise/minerals';
 // and interaction model are the same nav every AOC surface uses. The one
 // thing that differs is the Capability Mineral on the primary CTA: Amethyst
 // here, Sapphire on Enterprise/Governed Access/Assurance.
-const NAV_ITEMS = [
+// Frontera Systems is a separate public site, not an in-app view, so it is
+// the one item that leaves this origin — desktop and mobile both render from
+// this single list, so the `external` flag applies to each automatically.
+const NAV_ITEMS: { label: string; href: string; external?: boolean }[] = [
   { label: 'Digital Assets', href: '/#digital-asset' },
   { label: 'Capabilities', href: '/#capabilities' },
-  { label: 'Enterprise', href: '/?view=enterprise' },
+  { label: FRONTERA_SYSTEMS_NAME, href: FRONTERA_SYSTEMS_URL, external: true },
   { label: 'About', href: '/?view=about' },
 ];
 
@@ -34,6 +38,8 @@ export function ProtocolNav() {
               <a
                 key={item.label}
                 href={item.href}
+                target={item.external ? '_blank' : undefined}
+                rel={item.external ? 'noreferrer' : undefined}
                 className="shrink-0 rounded-lg px-2 py-2 text-white/65 transition-colors hover:text-white hover:bg-white/5"
               >
                 {item.label}
@@ -70,6 +76,8 @@ export function ProtocolNav() {
                 <a
                   key={item.label}
                   href={item.href}
+                  target={item.external ? '_blank' : undefined}
+                  rel={item.external ? 'noreferrer' : undefined}
                   onClick={() => setOpen(false)}
                   className="rounded-lg px-3 py-2.5 text-white/70 hover:bg-white/5 hover:text-white"
                 >
