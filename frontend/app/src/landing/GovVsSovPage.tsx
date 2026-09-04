@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { LogoRotating } from '../components/logo/LogoRotating';
+import { SOBERANIA_PROTOCOL_URL } from './brand';
 import './assurance.css';
 
-const PAGE_URL = 'https://www.aocprotocol.org/ai-governance-vs-ai-sovereignty';
+const PAGE_URL = `${SOBERANIA_PROTOCOL_URL}/ai-governance-vs-ai-sovereignty`;
 const FOUNDER_ESSAY_URL =
   'https://www.linkedin.com/pulse/i-started-looking-sovereignty-found-constitutional-valverde-checa-hnpye/';
 
@@ -50,7 +51,7 @@ function usePageMeta() {
     setMeta('og:description', 'Governance explains how AI is supervised. Sovereignty explains who truly controls the capability. Trust requires both.', true);
     setMeta('og:url', PAGE_URL, true);
     setMeta('og:type', 'article', true);
-    setMeta('og:image', 'https://www.aocprotocol.org/og-image.png', true);
+    setMeta('og:image', `${SOBERANIA_PROTOCOL_URL}/og-image.png`, true);
     setMeta('og:site_name', 'Soberanía Assurance', true);
 
     setMeta('twitter:card', 'summary_large_image');
@@ -114,11 +115,11 @@ function buildJsonLd() {
     '@graph': [
       {
         '@type': 'Organization',
-        '@id': 'https://www.aocprotocol.org/#organization',
+        '@id': `${SOBERANIA_PROTOCOL_URL}/#organization`,
         name: 'Soberanía Assurance',
         alternateName: 'Soberanía Protocol',
-        url: 'https://www.aocprotocol.org/',
-        logo: { '@type': 'ImageObject', url: 'https://www.aocprotocol.org/og-image.png' },
+        url: `${SOBERANIA_PROTOCOL_URL}/`,
+        logo: { '@type': 'ImageObject', url: `${SOBERANIA_PROTOCOL_URL}/og-image.png` },
         founder: { '@type': 'Person', name: 'Victor Valverde', sameAs: 'https://www.linkedin.com/in/victorvalverde/' },
         sameAs: [
           'https://www.linkedin.com/company/architects-of-change-protocol/',
@@ -132,12 +133,12 @@ function buildJsonLd() {
         url: PAGE_URL,
         name: 'AI Governance vs AI Sovereignty | Soberanía Assurance',
         description: 'AI Governance defines how AI systems are supervised, controlled, and made accountable. AI Sovereignty defines who controls, owns, moves, replaces, and operates the underlying AI capability.',
-        isPartOf: { '@id': 'https://www.aocprotocol.org/#website' },
-        about: { '@id': 'https://www.aocprotocol.org/#organization' },
-        primaryImageOfPage: { '@type': 'ImageObject', url: 'https://www.aocprotocol.org/og-image.png' },
+        isPartOf: { '@id': `${SOBERANIA_PROTOCOL_URL}/#website` },
+        about: { '@id': `${SOBERANIA_PROTOCOL_URL}/#organization` },
+        primaryImageOfPage: { '@type': 'ImageObject', url: `${SOBERANIA_PROTOCOL_URL}/og-image.png` },
         keywords: ['AI Governance vs AI Sovereignty', 'What is AI Sovereignty', 'What is AI Governance', 'AI Governance Score', 'AI Sovereignty Score', 'AI Trust Assessment', 'AI Constitutional Assessment', 'Constitutional AI Operations'],
         inLanguage: 'en-US',
-        publisher: { '@id': 'https://www.aocprotocol.org/#organization' },
+        publisher: { '@id': `${SOBERANIA_PROTOCOL_URL}/#organization` },
       },
       {
         '@type': 'Article',
@@ -145,9 +146,9 @@ function buildJsonLd() {
         headline: 'AI Governance vs AI Sovereignty',
         description: 'Governance explains how AI is supervised. Sovereignty explains who truly controls the capability. Trust requires both.',
         url: PAGE_URL,
-        image: 'https://www.aocprotocol.org/og-image.png',
+        image: `${SOBERANIA_PROTOCOL_URL}/og-image.png`,
         author: { '@type': 'Person', name: 'Victor Valverde', sameAs: 'https://www.linkedin.com/in/victorvalverde/' },
-        publisher: { '@id': 'https://www.aocprotocol.org/#organization' },
+        publisher: { '@id': `${SOBERANIA_PROTOCOL_URL}/#organization` },
         inLanguage: 'en-US',
         isPartOf: { '@id': `${PAGE_URL}#webpage` },
         about: [
@@ -169,19 +170,19 @@ function buildJsonLd() {
         '@type': 'BreadcrumbList',
         '@id': `${PAGE_URL}#breadcrumb`,
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.aocprotocol.org/' },
-          { '@type': 'ListItem', position: 2, name: 'Soberanía Assurance', item: 'https://www.aocprotocol.org/assurance/intelligence-risk' },
+          { '@type': 'ListItem', position: 1, name: 'Home', item: `${SOBERANIA_PROTOCOL_URL}/` },
+          { '@type': 'ListItem', position: 2, name: 'Soberanía Assurance', item: `${SOBERANIA_PROTOCOL_URL}/assurance/intelligence-risk` },
           { '@type': 'ListItem', position: 3, name: 'AI Governance vs AI Sovereignty', item: PAGE_URL },
         ],
       },
       {
         '@type': 'Service',
-        '@id': 'https://www.aocprotocol.org/#service',
+        '@id': `${SOBERANIA_PROTOCOL_URL}/#service`,
         name: 'AI Governance and Sovereignty Assessment',
         serviceType: 'AI Governance Assessment',
         description: 'A constitutional assessment framework that evaluates AI systems across Governance and Sovereignty dimensions.',
-        provider: { '@id': 'https://www.aocprotocol.org/#organization' },
-        url: 'https://www.aocprotocol.org/assurance/intelligence-risk',
+        provider: { '@id': `${SOBERANIA_PROTOCOL_URL}/#organization` },
+        url: `${SOBERANIA_PROTOCOL_URL}/assurance/intelligence-risk`,
       },
     ],
   };

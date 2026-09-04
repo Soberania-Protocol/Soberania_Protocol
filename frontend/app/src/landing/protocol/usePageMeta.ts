@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
+import { SOBERANIA_PROTOCOL_URL } from '../brand';
 
-const PAGE_URL = 'https://www.aocprotocol.org/';
+const PAGE_URL = `${SOBERANIA_PROTOCOL_URL}/`;
 const TITLE = 'Soberanía Protocol — An Open Protocol for Digital Assets, Capabilities & Sovereignty';
 const DESCRIPTION =
-  "Soberanía Protocol is an open, provider-neutral protocol for digital assets — identity, integrity, provenance, capabilities and sovereignty that compatible systems can interpret. Soberanía Enterprise operationalizes governance on top of it.";
+  "Soberanía Protocol is an open, provider-neutral protocol for digital assets — identity, integrity, provenance, capabilities and sovereignty that compatible systems can interpret. Frontera Systems operationalizes governance on top of it.";
 
 // Per-page metadata injection so the root URL's live document head matches
 // the Protocol thesis instead of the static index.html defaults (which are

@@ -37,7 +37,7 @@ describe('Developers orbital composition', () => {
 
     expect(screen.getByRole('link', { name: 'View @aoc/protocol on GitHub' })).toHaveAttribute(
       'href',
-      'https://github.com/Architects-of-Change-Protocol/Architects_of_Change_Protocol/tree/main/packages/protocol',
+      'https://github.com/Republika-Network/Soberania_Protocol/tree/main/packages/protocol',
     );
     expect(screen.getByRole('link', { name: 'Read the docs' })).toHaveAttribute('href', '/?view=docs');
   });

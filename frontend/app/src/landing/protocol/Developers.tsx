@@ -3,10 +3,9 @@ import { SectionHeader, Card } from '../enterprise/primitives';
 import { MINERALS } from '../enterprise/minerals';
 import { LogoRotating } from '../../components/logo/LogoRotating';
 import type { CSSProperties } from 'react';
+import { PROTOCOL_PACKAGE_URL } from '../brand';
 import './Developers.css';
 
-const REPO_URL = 'https://github.com/Architects-of-Change-Protocol/Architects_of_Change_Protocol';
-const PROTOCOL_PACKAGE_URL = `${REPO_URL}/tree/main/packages/protocol`;
 const m = MINERALS.amethyst;
 
 export function Developers() {

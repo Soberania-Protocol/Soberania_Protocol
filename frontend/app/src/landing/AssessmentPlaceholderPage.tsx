@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { LogoRotating } from '../components/logo/LogoRotating';
 import { CONSTITUTIONAL_INDEX_ORGANIZATIONS } from './assuranceIndexData';
+import { SOBERANIA_PROTOCOL_URL } from './brand';
 import './assurance.css';
 
 const QUADRANT_META = {
@@ -13,7 +14,7 @@ const QUADRANT_META = {
 function useAssessmentMeta(orgName: string, slug: string) {
   useEffect(() => {
     const prevTitle = document.title;
-    const pageUrl = `https://www.aocprotocol.org/research/${slug}-assessment`;
+    const pageUrl = `${SOBERANIA_PROTOCOL_URL}/research/${slug}-assessment`;
 
     const setMeta = (name: string, content: string, prop = false) => {
       const attr = prop ? 'property' : 'name';
@@ -51,7 +52,7 @@ function useAssessmentMeta(orgName: string, slug: string) {
     setMeta('og:description', `Independent constitutional assessment of ${orgName} evaluating AI Governance and Sovereignty dimensions.`, true);
     setMeta('og:url', pageUrl, true);
     setMeta('og:type', 'article', true);
-    setMeta('og:image', 'https://www.aocprotocol.org/og-image.png', true);
+    setMeta('og:image', `${SOBERANIA_PROTOCOL_URL}/og-image.png`, true);
     setMeta('og:site_name', 'Soberanía Assurance', true);
     setMeta('twitter:card', 'summary_large_image');
 
@@ -67,8 +68,8 @@ function useAssessmentMeta(orgName: string, slug: string) {
         breadcrumb: {
           '@type': 'BreadcrumbList',
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'Soberanía Assurance', item: 'https://www.aocprotocol.org' },
-            { '@type': 'ListItem', position: 2, name: 'Research Hub', item: 'https://www.aocprotocol.org/research' },
+            { '@type': 'ListItem', position: 1, name: 'Soberanía Assurance', item: SOBERANIA_PROTOCOL_URL },
+            { '@type': 'ListItem', position: 2, name: 'Research Hub', item: `${SOBERANIA_PROTOCOL_URL}/research` },
             { '@type': 'ListItem', position: 3, name: `${orgName} Assessment`, item: pageUrl },
           ],
         },

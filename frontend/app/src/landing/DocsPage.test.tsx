@@ -14,21 +14,22 @@ describe('public Protocol developer journey', () => {
     expect(screen.getByRole('heading', { name: 'Inspect it. Challenge it. Improve it.' })).toBeInTheDocument();
   });
 
-  it('makes Protocol documentation the primary CTA before Enterprise', () => {
+  it('makes Protocol documentation the primary CTA before Frontera Systems', () => {
     const { container } = render(<ProtocolToEnterprise />);
     const links = within(container).getAllByRole('link');
 
     expect(links.at(-2)).toHaveTextContent('Review Protocol Documentation');
     expect(links.at(-2)).toHaveAttribute('href', '/?view=docs#getting-started');
-    expect(links.at(-1)).toHaveTextContent('Explore Soberanía Enterprise');
-    expect(links.at(-1)).toHaveAttribute('href', '/?view=enterprise');
+    expect(links.at(-1)).toHaveTextContent('Explore Frontera Systems');
+    expect(links.at(-1)).toHaveAttribute('href', 'https://frontera-systems.com');
   });
 
   it('renders the three-layer capability architecture with semantic controls', () => {
     const { container } = render(<ProtocolToEnterprise />);
     expect(within(container).getByRole('heading', { name: 'Capabilities shape platforms.' })).toBeInTheDocument();
     expect(within(container).getByText('Centers of gravity')).toBeInTheDocument();
-    expect(within(container).getByText('Soberanía Enterprise')).toBeInTheDocument();
+    expect(within(container).getByText('Frontera Systems')).toBeInTheDocument();
+    expect(within(container).queryByText('Soberanía Enterprise')).not.toBeInTheDocument();
     expect(within(container).getByText('Soberanía Protocol')).toBeInTheDocument();
     expect(within(container).getByText('Identity')).toBeInTheDocument();
     expect(within(container).getByText('Governance')).toBeInTheDocument();

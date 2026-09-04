@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { LogoRotating } from '../components/logo/LogoRotating';
+import { SOBERANIA_PROTOCOL_URL } from './brand';
 import './assurance.css';
 
-const PAGE_URL = 'https://www.aocprotocol.org/what-is-ai-sovereignty';
+const PAGE_URL = `${SOBERANIA_PROTOCOL_URL}/what-is-ai-sovereignty`;
 
 // ── Metadata ──────────────────────────────────────────────────────────────────
 
@@ -58,7 +59,7 @@ function usePageMeta() {
     );
     setMeta('og:url', PAGE_URL, true);
     setMeta('og:type', 'article', true);
-    setMeta('og:image', 'https://www.aocprotocol.org/og-image.png', true);
+    setMeta('og:image', `${SOBERANIA_PROTOCOL_URL}/og-image.png`, true);
     setMeta('og:site_name', 'Soberanía Assurance', true);
 
     setMeta('twitter:card', 'summary_large_image');
@@ -131,16 +132,16 @@ function buildJsonLd() {
       breadcrumb: {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.aocprotocol.org' },
-          { '@type': 'ListItem', position: 2, name: 'Soberanía Assurance', item: 'https://www.aocprotocol.org/assurance/intelligence-risk' },
+          { '@type': 'ListItem', position: 1, name: 'Home', item: SOBERANIA_PROTOCOL_URL },
+          { '@type': 'ListItem', position: 2, name: 'Soberanía Assurance', item: `${SOBERANIA_PROTOCOL_URL}/assurance/intelligence-risk` },
           { '@type': 'ListItem', position: 3, name: 'What is AI Sovereignty?', item: PAGE_URL },
         ],
       },
       publisher: {
         '@type': 'Organization',
         name: 'Soberanía Assurance',
-        url: 'https://www.aocprotocol.org',
-        logo: { '@type': 'ImageObject', url: 'https://www.aocprotocol.org/og-image.png' },
+        url: SOBERANIA_PROTOCOL_URL,
+        logo: { '@type': 'ImageObject', url: `${SOBERANIA_PROTOCOL_URL}/og-image.png` },
       },
     },
     {
@@ -150,16 +151,16 @@ function buildJsonLd() {
       description:
         'AI Sovereignty is the ability of an organization to control, operate, move, replace, and preserve independence over its AI capabilities.',
       url: PAGE_URL,
-      image: 'https://www.aocprotocol.org/og-image.png',
+      image: `${SOBERANIA_PROTOCOL_URL}/og-image.png`,
       author: {
         '@type': 'Organization',
         name: 'Soberanía Assurance',
-        url: 'https://www.aocprotocol.org',
+        url: SOBERANIA_PROTOCOL_URL,
       },
       publisher: {
         '@type': 'Organization',
         name: 'Soberanía Assurance',
-        url: 'https://www.aocprotocol.org',
+        url: SOBERANIA_PROTOCOL_URL,
       },
       about: [
         { '@type': 'Thing', name: 'AI Sovereignty' },
@@ -186,9 +187,9 @@ function buildJsonLd() {
       provider: {
         '@type': 'Organization',
         name: 'Soberanía Assurance',
-        url: 'https://www.aocprotocol.org',
+        url: SOBERANIA_PROTOCOL_URL,
       },
-      url: 'https://www.aocprotocol.org/assurance/intelligence-risk',
+      url: `${SOBERANIA_PROTOCOL_URL}/assurance/intelligence-risk`,
     },
   ];
 }

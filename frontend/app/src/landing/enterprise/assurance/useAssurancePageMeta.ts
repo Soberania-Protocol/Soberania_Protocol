@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
+import { SOBERANIA_PROTOCOL_URL } from '../../brand';
 
-const PAGE_URL = 'https://www.aocprotocol.org/?view=assurance';
+const PAGE_URL = `${SOBERANIA_PROTOCOL_URL}/?view=assurance`;
 const TITLE = 'Soberanía Assurance — Sovereignty and Governance Capability Assessment | Soberanía Enterprise';
 const DESCRIPTION =
   'Soberanía Assurance evaluates, validates and continuously monitors every sovereignty capability defined by Soberanía Protocol and every governance capability operated by Soberanía Enterprise — capability inventory, evidence validation, maturity rating, and a path to continuous assurance.';

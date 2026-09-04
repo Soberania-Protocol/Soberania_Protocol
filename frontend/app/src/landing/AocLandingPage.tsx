@@ -38,7 +38,7 @@ export const AocLandingPage = () => {
       <Developers />
       <CtaSection />
 
-      <ProtocolFooter accent="amethyst" />
+      <ProtocolFooter accent="amethyst" surface="protocol" />
     </main>
   );
 };

@@ -1,12 +1,17 @@
 import type { Mineral } from '../enterprise/primitives';
-
-const REPO_URL = 'https://github.com/Architects-of-Change-Protocol/Architects_of_Change_Protocol'
+import { FRONTERA_SYSTEMS_NAME, FRONTERA_SYSTEMS_URL, REPOSITORY_URL } from '../brand';
 
 type FooterItem = {
   label: string
   href?: string
   external?: boolean
 }
+
+// Which surface's navigation column to render. Only the first item differs:
+// the Protocol surface points at the Frontera Systems site (the commercial
+// layer's own public brand), every other surface keeps the in-app
+// /?view=enterprise entry it renders today.
+export type FooterSurface = 'default' | 'protocol'
 
 const protocolLinks: FooterItem[] = [
   { label: 'Architecture' },
@@ -15,13 +20,20 @@ const protocolLinks: FooterItem[] = [
   { label: 'Sovereignty' },
 ]
 
-const navigationLinks: FooterItem[] = [
-  { label: 'Enterprise', href: '/?view=enterprise' },
+const sharedNavigationLinks: FooterItem[] = [
   { label: 'Docs', href: '/?view=docs' },
   { label: 'About', href: '/?view=about' },
   { label: 'Contact Us', href: '/?view=contact' },
-  { label: 'GitHub', href: REPO_URL, external: true },
+  { label: 'GitHub', href: REPOSITORY_URL, external: true },
 ]
+
+const NAVIGATION_LINKS: Record<FooterSurface, FooterItem[]> = {
+  default: [{ label: 'Enterprise', href: '/?view=enterprise' }, ...sharedNavigationLinks],
+  protocol: [
+    { label: FRONTERA_SYSTEMS_NAME, href: FRONTERA_SYSTEMS_URL, external: true },
+    ...sharedNavigationLinks,
+  ],
+}
 
 // Every AOC surface renders the same footer component (shared layout,
 // copy structure and interaction model) — only its Capability Mineral
@@ -47,8 +59,12 @@ const ACCENT_CLASSES: Record<Mineral, { divider: string }> = {
   },
 } as const;
 
-export function ProtocolFooter({ accent = 'sapphire' }: { accent?: Mineral }) {
+export function ProtocolFooter({
+  accent = 'sapphire',
+  surface = 'default',
+}: { accent?: Mineral; surface?: FooterSurface }) {
   const tone = ACCENT_CLASSES[accent];
+  const navigationLinks = NAVIGATION_LINKS[surface];
   return (
     <section className="border-t border-white/10 bg-[#050816]">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 pb-6 pt-12 md:pt-16">
